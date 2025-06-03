@@ -1,0 +1,108 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f3f3f3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+main {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  width: 50%;
+  max-width: 700px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.input-titulo {
+  text-align: center;
+  background-color: #f4f4f4;
+  padding: 10px;
+  border-radius: 5px;
+  width: 47%;
+}
+
+.input-titulo h2 {
+  font-size: 45px;
+  color: #3a4fcf;
+  margin-bottom: 5px;
+}
+
+.input-titulo p {
+  font-size: 14px;
+  color: #333;
+}
+
+.input-descripcion {
+  text-align: center;
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  height: 400px;
+}
+
+.input-descripcion h2 {
+  font-size: 30px;
+  color: #3a4fcf;
+}
+
+.descripcion-tarea {
+  width: 90%;
+  height: 90%;
+}
+
+.hora-fecha {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.hora-fecha div {
+  text-align: center;
+}
+
+.hora-fecha img {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 5px;
+}
+
+.hora-fecha p {
+  font-size: 14px;
+  color: #888;
+}
+
+footer {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.registrar-cancelar {
+  background-color: #f8f8f8;
+  color: #4856f5;
+}
