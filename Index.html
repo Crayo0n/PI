@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ingreso</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="./CSS/estilos.css" />
+  </head>
+  <body class="body_login">
+    <div class="text-center">
+      <img src="./IMG/Priority-Pulse-logo.svg" alt="Logo" class="img_login" />
+      <h2 class="logo-title">ProrityPulse</h2>
+    </div>
+
+ 
+    <div class="login-container">
+      <form action="PHP/controlador.php" method="post">
+
+        <div class="mb-3 input_container">
+          <div class="input-group">
+            <span class="input-group-text">
+              <img
+                src="./IMG/icon_user.svg"
+                alt="Ícono de usuario"
+                class="input_icon"
+              />
+            </span>
+            <input
+              type="email"
+              class="form-control input_login"
+              placeholder="USUARIO"
+              name="txtnombre"
+            />
+          </div>
+        </div>
+
+
+        <div class="mb-3 input_container">
+          <div class="input-group">
+            <span class="input-group-text">
+              <img
+                src="./IMG/icon_password.svg"
+                alt="Ícono de contraseña"
+                class="input_icon"
+              />
+            </span>
+            <input
+              type="password"
+              class="form-control input_login"
+              placeholder="CONTRASEÑA"
+              name="txtpass"
+              id="txtPass"
+            />
+            <span class="input-group-text">
+              <img
+                src="./IMG/icon_visibility.svg"
+                alt="Mostrar contraseña"
+                class="input_icon"
+                onclick="togglePassword()"
+                id="set_visibility"
+              />
+            </span>
+          </div>
+
+          <div></div>
+        </div>
+
+        <button class="btn_login" 
+        type="submit"
+        name="btnAcceder">
+          Ingresar
+        </button>
+
+        <a href="./HTML/registrarse.html" 
+        class="btn-link btn_register"
+        >Registrar Nuevo Usuario</a>
+      </form>
+    </div>
+
+
+
+
+    <script>
+      function togglePassword() {
+        const passwordInput = document.getElementById("txtPass");
+        const icon = document.getElementById("set_visibility");
+  
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          icon.src = "./IMG/visiblity.svg"; 
+          icon.alt = "Ocultar contraseña";
+        } else {
+          passwordInput.type = "password";
+          icon.src = "./IMG/icon_visibility.svg"; 
+          icon.alt = "Mostrar contraseña";
+        }
+      }
+    </script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

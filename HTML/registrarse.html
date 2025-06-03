@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../CSS/estilos_registrarse.css">
+    <title>Formulario de Registro</title>
+</head>
+<body>
+    <div class="contenedor-formulario">
+        <h1 class="titulo">Registrarse</h1>
+        <form action="../PHP/controlador.php" method="post" enctype="multipart/form-data">
+            
+            <div class="fila">
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Nombre">
+                </div>
+                <div class="form-group">
+                    <label for="apellido">Apellido</label>
+                    <input type="text" id="apellido" name="apellido" placeholder="Apellido">
+                </div>
+            </div>
+            <div class="fila">
+                <div class="form-group">
+                    <label for="contrasena">Contraseña</label>
+                    <input type="password" id="contrasena" name="contrasena" placeholder="Contraseña">
+                </div>
+                <div class="form-group">
+                    <label for="confirmar-contrasena">Confirmar Contraseña</label>
+                    <input type="password" id="confirmar-contrasena" name="confirmar-contrasena" placeholder="Confirmar Contraseña">
+                </div>
+            </div>
+            <div class="fila">
+                <div class="form-group">
+                    <label for="foto">Foto de Perfil</label>
+                    <input type="file" id="foto" name="foto">
+                </div>
+                <div class="form-group">
+                    <label for="correo">Correo</label>
+                    <div class="correo-dominio">
+                        <input type="text" id="correo" name="correo" placeholder="Tu correo">
+                        <!-- Dropdown vacío, JavaScript lo llenará -->
+                        <select id="dominios" name="dominio"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="barra-separadora"></div>
+            <button type="submit" class="boton-guardar" name="guardar">Guardar</button>
+        </form>
+    </div>
+    <script src="../scripts/script_registrarse.js"></script> <!-- Vincular JavaScript -->
+</body>
+</html>
