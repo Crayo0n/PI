@@ -1,6 +1,17 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'
+
+# Lista de tareas de ejemplo
+tareas_importantes = [
+    {"hora": "8:00 am", "descripcion": "Estudiar Física", "completada": False, "color": "azul"},
+    {"hora": "10:00 am", "descripcion": "Leer", "completada": False, "color": "rosa"}
+]
+
+# Contador de racha
+racha = 0
+color_racha = 'default'  # Racha normal al principio
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -39,7 +50,8 @@ def registrarse():
             error = 'Las contraseñas no coinciden'
 
         if not errores and not error:
-            # Aquí guardarías al usuario
+            # Aquí guardarías al usuario (simulación de registro)
+            flash('Usuario registrado correctamente', 'success')
             return redirect(url_for('login'))
 
         return render_template('registrarse.html', errores=errores, error=error)
@@ -47,42 +59,49 @@ def registrarse():
     return render_template('registrarse.html', errores=errores)
 
 
-
-
-# Lista de tareas de ejemplo
-tareas_importantes = [
-    {"hora": "8:00 am", "descripcion": "Estudiar Física", "completada": False, "color": "azul"},
-    {"hora": "10:00 am", "descripcion": "Leer", "completada": False, "color": "rosa"}
-]
-
-# Contador de racha
-racha = 0
-color_racha = 'default'  # Racha normal al principio
-
+# Ruta para manejar las actividades
 @app.route('/actividades', methods=['GET', 'POST'])
 def actividades():
     global racha, color_racha
-    
+
     if request.method == 'POST':
-        tarea_completada = request.form.getlist('tarea_completada')  # Lista de índices de las tareas completadas
-        
-        # Marca las tareas como completadas según los checkboxes seleccionados
+        tarea_completada = request.form.getlist('tarea_completada')
+
         for idx, tarea in enumerate(tareas_importantes):
             if str(idx) in tarea_completada:
                 tareas_importantes[idx]['completada'] = True
             else:
                 tareas_importantes[idx]['completada'] = False
-        
-        # Verifica si todas las tareas fueron completadas
+
+        # Verificar si todas las tareas están completadas
         if all(tarea['completada'] for tarea in tareas_importantes):
             racha += 1
-            color_racha = 'gold'  # Cambia el color de la racha a dorado si todas las tareas están completas
+            color_racha = 'gold'  # Cambia la racha a dorado si todas las tareas están completadas
         else:
-            color_racha = 'default'  # Racha normal
-        
+            color_racha = 'default'
+
         return redirect(url_for('actividades'))
 
-    return render_template('actividades.html', tareas_con_indice=enumerate(tareas_importantes), racha=racha, color_racha=color_racha)
+    return render_template('actividades.html', tareas_importantes=tareas_importantes, racha=racha, color_racha=color_racha)
+
+# Endpoint para manejar la actualización de las tareas
+@app.route('/actualizar_tarea', methods=['POST'])
+def actualizar_tarea():
+    global racha, color_racha
+
+    tarea_completada = request.json.get('tarea_completada')
+
+    for idx, tarea in enumerate(tareas_importantes):
+        tarea['completada'] = str(idx) in tarea_completada
+
+    # Verificamos si todas las tareas están completadas y actualizamos la racha
+    if all(tarea['completada'] for tarea in tareas_importantes):
+        racha += 1
+        color_racha = 'gold'
+    else:
+        color_racha = 'default'
+
+    return jsonify({'racha': racha, 'color_racha': color_racha})
 
 
 if __name__ == '__main__':
