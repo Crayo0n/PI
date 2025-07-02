@@ -49,13 +49,40 @@ def registrarse():
 
 
 
-@app.route('/actividades',  methods=['POST'])
+# Lista de tareas de ejemplo
+tareas_importantes = [
+    {"hora": "8:00 am", "descripcion": "Estudiar Física", "completada": False, "color": "azul"},
+    {"hora": "10:00 am", "descripcion": "Leer", "completada": False, "color": "rosa"}
+]
+
+# Contador de racha
+racha = 0
+color_racha = 'default'  # Racha normal al principio
+
+@app.route('/actividades', methods=['GET', 'POST'])
 def actividades():
-    tareas_importantes = [
-        {"hora": "8:00 am", "descripcion": "Estudiar Física", "color": "azul", "completada": False},
-        {"hora": "10:00 am", "descripcion": "Leer", "color": "rosa", "completada": True}
-    ]
-    return render_template('actividades.html', tareas_importantes=tareas_importantes)
+    global racha, color_racha
+    
+    if request.method == 'POST':
+        tarea_completada = request.form.getlist('tarea_completada')  # Lista de índices de las tareas completadas
+        
+        # Marca las tareas como completadas según los checkboxes seleccionados
+        for idx, tarea in enumerate(tareas_importantes):
+            if str(idx) in tarea_completada:
+                tareas_importantes[idx]['completada'] = True
+            else:
+                tareas_importantes[idx]['completada'] = False
+        
+        # Verifica si todas las tareas fueron completadas
+        if all(tarea['completada'] for tarea in tareas_importantes):
+            racha += 1
+            color_racha = 'gold'  # Cambia el color de la racha a dorado si todas las tareas están completas
+        else:
+            color_racha = 'default'  # Racha normal
+        
+        return redirect(url_for('actividades'))
+
+    return render_template('actividades.html', tareas_con_indice=enumerate(tareas_importantes), racha=racha, color_racha=color_racha)
 
 
 if __name__ == '__main__':
