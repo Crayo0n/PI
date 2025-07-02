@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
+from db import db  
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -13,13 +15,25 @@ tareas_importantes = [
 racha = 0
 color_racha = 'default'  # Racha normal al principio
 
+import tablas
+
+# Configuración de la base de datos
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usuarios.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app)
+@app.before_request
+def create_tables():
+    db.create_all()
+# Rutas de la aplicación
+
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        # Aquí validas el usuario (esto es solo un ejemplo básico)
-        if email == "admin@correo.com" and password == "1234":
+        # Aquí validas el usuario 
+        usuario = tablas.Usuarios.query.filter_by(email=email).first()
+        if usuario and usuario.contrasena == password:
             return redirect(url_for('actividades'))
         else:
             error = "Credenciales incorrectas"
@@ -52,6 +66,16 @@ def registrarse():
         if not errores and not error:
             # Aquí guardarías al usuario (simulación de registro)
             flash('Usuario registrado correctamente', 'success')
+            # Aquí se guarda el usuario en la base de datos
+            nuevo_usuario = tablas.Usuarios(
+                nombre=nombre,
+                apellido=apellido,
+                email=email,
+                contrasena=password
+            )
+            db.session.add(nuevo_usuario)
+            db.session.commit()
+
             return redirect(url_for('login'))
 
         return render_template('registrarse.html', errores=errores, error=error)
