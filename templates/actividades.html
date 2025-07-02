@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Actividades - Priority Pulse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/actividades.css') }}">
+</head>
+<body>
+    <div class="T_importantes">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <span class="racha">120 🔥</span>
+            <a href="#">Perfil</a>
+            <a href="#">Rutinas</a>
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
+            <a href="#">Actividades</a>
+            <a href="{{ url_for('login') }}">Cerrar Sesión</a>
+        </nav>
+
+        <!-- Actividades del día -->
+        <section class="importantes">
+            <div class="importantes-header">
+                <h2>Actividades Importantes del Día</h2>
+                <button class="editar-btn">Editar</button>
+            </div>
+            <div class="tarjetas">
+                {% for tarea in tareas_importantes %}
+                    <div class="tarjeta {{ tarea.color }} {% if tarea.completada %}completada{% endif %}">
+                        <img src="{{ url_for('static', filename='img/icono-tarea.png') }}" class="icono-tarea">
+                        <span>{{ tarea.hora }}</span>
+                        <p class="descripcion">{{ tarea.descripcion }}</p>
+                        <input type="checkbox" class="custom-checkbox" {% if tarea.completada %}checked{% endif %}>
+                    </div>
+                {% endfor %}
+            </div>
+    </section>
+    </div>
+    
+    <div class="Tareas_Dia">
+     <!-- Actividades del calendario -->
+    <section class="calendario">
+        <div class="calendario-header">
+            <h2>Lunes 28</h2>
+            <button class="agregar-btn">Agregar</button>
+        </div>
+        <div class="tarjetas calendario-grid">
+            <!-- Más tarjetas -->
+            <div class="tarjeta verde">
+                <span>8:00 am</span>
+                <p>Estudiar Física</p>
+                <input type="checkbox">
+            </div>
+            <div class="tarjeta gris">
+                <span>8:00 am</span>
+                <p>Estudiar Física</p>
+                <input type="checkbox">
+            </div>
+            <!-- Agrega más según sea necesario -->
+        </div>
+    </section>
+
+    </div>
+    
+
+</body>
+</html>
