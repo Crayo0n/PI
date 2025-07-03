@@ -89,7 +89,7 @@ checkboxes.forEach(checkbox => {
         .then(data => {
             // Actualizar la racha y el color de la racha en el frontend
             document.querySelector('#racha-fuego').innerText = `${data.racha} 🔥`;
-            document.querySelector('#racha-fuego').style.color = data.color_racha;
+            document.querySelector('.racha').style.color = data.color_racha;
         });
     });
 });
