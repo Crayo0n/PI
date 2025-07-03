@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Actividad</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/AcActividad.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <span class="racha">120 🔥</span>
+            <a href="#">Perfil</a>
+            <a href="#">Rutinas</a>
+            <a href="{{ url_for('actividades') }}">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
+            </a>
+            <a href="#">Actividades</a>
+            <a href="#">Cerrar Sesión</a>
+        </nav>
+
+        <div class="crear-actividad">
+
+            <img id="imagen-actividad" src="{{ url_for('static', filename='img/imagen1.png') }}" alt="Imagen de actividad" class="imagen-actividad">
+
+            <input type="text" id="nombre" name="nombre" class="actividad-titulo" placeholder="Tarea" required>
+
+            <div class="color-palette">
+                <div class="color-box pink" onclick="cambiarImagen('static/img/Imagen1.png')"></div>
+                <div class="color-box orange" onclick="cambiarImagen('static/img/imagen3.png')"></div>
+                <div class="color-box green" onclick="cambiarImagen('static/img/imagen4.png')"></div>
+                <div class="color-box yellow" onclick="cambiarImagen('static/img/imagen5.png')"></div>
+                <div class="color-box blue" onclick="cambiarImagen('static/img/imagen2.png')"></div>
+                <div class="color-box purple" onclick="cambiarImagen('static/img/imagen6.png')"></div>
+            </div>
+
+            <form>
+                <label for="fecha">Fecha</label>
+                <input type="date" id="fecha" name="fecha">
+                
+                <label for="repetir">Repetir</label>
+                <select id="repetir" name="repetir">
+                    <option value="diario">Diario</option>
+                    <option value="semanal">Semanal</option>
+                    <option value="mensual">Mensual</option>
+                </select>
+                
+                <label for="hora">Hora</label>
+                <input type="time" id="hora" name="hora">
+                
+                <label for="prioridad">Prioridad</label>
+                <select id="prioridad" name="prioridad">
+                    <option value="alta">Alta</option>
+                    <option value="media">Media</option>
+                    <option value="baja">Baja</option>
+                </select>
+                
+                <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" name="descripcion"></textarea>
+
+                <button type="submit" class="crear-btn">Editar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function cambiarImagen(imagen) {
+            document.getElementById('imagen-actividad').src = imagen;
+        }
+    </script>
+</body>
+</html>
