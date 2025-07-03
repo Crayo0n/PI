@@ -64,7 +64,6 @@ def registrarse():
             error = 'Las contraseñas no coinciden'
 
         if not errores and not error:
-            # Aquí guardarías al usuario (simulación de registro)
             flash('Usuario registrado correctamente', 'success')
             # Aquí se guarda el usuario en la base de datos
             nuevo_usuario = tablas.Usuarios(
@@ -82,13 +81,14 @@ def registrarse():
 
     return render_template('registrarse.html', errores=errores)
 
-@app.route('/nueva-actividad', endpoint='NvActividad')   
-def nueva_actividad():
-    return render_template('NvActividad.html')  
+@app.route('/nueva_actividad')
+def NvActividad():
+    return render_template('NvActividad.html', racha=racha, color_racha=color_racha)
 
-@app.route('/editar-actividad', endpoint='AcActividad')
-def editar_actividad():
-    return render_template('AcActividad.html')
+@app.route('/editar_actividad')
+def AcActividad():
+    return render_template('AcActividad.html', racha=racha, color_racha=color_racha)
+
     
 # Ruta para manejar las actividades
 @app.route('/actividades', methods=['GET', 'POST'])

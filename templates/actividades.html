@@ -1,92 +1,102 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Actividades - Priority Pulse</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/actividades.css') }}">
 </head>
+
 <body>
 
-<nav class="navbar">
-    <div class="box">
-        <button class="open-modal-btn">
-            <span id="racha-fuego" class="racha" style="color: {{ color_racha }}">
-                {{ racha }} 🔥
-                <span class="manita">✋</span>
-                <span class="carita">😊</span>
-            </span>
-        </button>
-    </div>
-    <a href="#">Perfil</a>
-    <a href="#">Rutinas</a>
-    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
-    <a href="#">Actividades</a>
-    <a href="{{ url_for('login') }}">Cerrar Sesión</a>
-</nav>
-
-<section class="importantes">
-    <div class="importantes-header">
-        <h2>Actividades Importantes del Día</h2>
-        <a href="{{ url_for('AcActividad') }}" class="editar-btn">Editar</a>
-    </div>
-    <div class="tarjetas">
-        {% for tarea in tareas_importantes %}
-            <div class="tarjeta {{ tarea.color }} {% if tarea.completada %}completada{% endif %}">
-                <img src="{{ url_for('static', filename='img/icono-tarea.png') }}" class="icono-tarea">
-                <span>{{ tarea.hora }}</span>
-                <p class="descripcion">{{ tarea.descripcion }}</p>
-                <form method="POST" style="display: inline;">
-                    <input type="checkbox" class="tarea-checkbox" data-idx="{{ loop.index0 }}" {% if tarea.completada %}checked{% endif %}>
-                </form>
-            </div>
-        {% endfor %}
-    </div>
-</section>
-
-<div class="Tareas_Dia">
-    <section class="calendario">
-        <div class="calendario-header">
-            <h2>Lunes 28</h2>
-           <a href="{{ url_for('NvActividad') }}" class="agregar-btn">Agregar</a>
+    <nav class="navbar">
+        <div class="box">
+            <button class="open-modal-btn">
+                <span id="racha-fuego" class="racha" style="color: {{ color_racha }}">
+                    {{ racha }} 🔥
+                    <span class="manita">✋</span>
+                    <span class="carita">😊</span>
+                </span>
+            </button>
         </div>
-        <div class="tarjetas calendario-grid">
-            {% for tarea in tareas_importantes %}
+        <a href="#">Perfil</a>
+        <a href="#">Rutinas</a>
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
+        <a href="#">Actividades</a>
+        <a href="{{ url_for('login') }}">Cerrar Sesión</a>
+    </nav>
+
+    <div class="divImportantes">
+        <section class="importantes">
+            <div class="importantes-header">
+                <h2>Actividades Importantes del Día</h2>
+                <a href="{{ url_for('AcActividad') }}" class="editar-btn">Editar</a>
+            </div>
+            <div class="tarjetas">
+                {% for tarea in tareas_importantes %}
+                <div class="tarjeta {{ tarea.color }} {% if tarea.completada %}completada{% endif %}">
+                    <img src="{{ url_for('static', filename='img/icono-tarea.png') }}" class="icono-tarea">
+                    <span>{{ tarea.hora }}</span>
+                    <p class="descripcion">{{ tarea.descripcion }}</p>
+                    <form method="POST" style="display: inline;">
+                        <input type="checkbox" class="tarea-checkbox" data-idx="{{ loop.index0 }}" {% if
+                            tarea.completada %}checked{% endif %}>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+
+    </div>
+
+
+
+    <div class="Tareas_Dia">
+        <section class="calendario">
+            <div class="calendario-header">
+                <h2>Lunes 28</h2>
+                <a href="{{ url_for('NvActividad') }}" class="agregar-btn">Agregar</a>
+            </div>
+            <div class="tarjetas calendario-grid">
+                {% for tarea in tareas_importantes %}
                 <div class="tarjeta {{ tarea.color }} {% if tarea.completada %}completada{% endif %}">
                     <img src="{{ url_for('static', filename='img/icono-tarea.png') }}" class="icono-tarea">
                     <span>{{ tarea.hora }}</span>
                     <p class="descripcion">{{ tarea.descripcion }}</p>
                     <input type="checkbox" class="custom-checkbox" {% if tarea.completada %}checked{% endif %}>
                 </div>
-            {% endfor %}
-        </div>
-    </section>
-</div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
 
-<script>
-    const checkboxes = document.querySelectorAll('.tarea-checkbox');
+    <script>
+        const checkboxes = document.querySelectorAll('.tarea-checkbox');
 
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            const tarea_completada = Array.from(checkboxes)
-                .filter(cbx => cbx.checked)
-                .map(cbx => cbx.getAttribute('data-idx'));
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const tarea_completada = Array.from(checkboxes)
+                    .filter(cbx => cbx.checked)
+                    .map(cbx => cbx.getAttribute('data-idx'));
 
-            fetch('/actualizar_tarea', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ tarea_completada: tarea_completada })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.querySelector('#racha-fuego').innerText = `${data.racha} 🔥`;
-                document.querySelector('.racha').style.color = data.color_racha;
+                fetch('/actualizar_tarea', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ tarea_completada: tarea_completada })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.querySelector('#racha-fuego').innerText = `${data.racha} 🔥`;
+                        document.querySelector('.racha').style.color = data.color_racha;
+                    });
             });
         });
-    });
-</script>
+    </script>
 
-<script src="{{ url_for('static', filename='js/actividades.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/actividades.js') }}"></script>
 </body>
+
 </html>

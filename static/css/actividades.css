@@ -20,8 +20,6 @@ body {
     align-items: center;
     background: #b39ddb;
     padding: 10px 30px;
-    border-radius: 10px;
-    margin-bottom: 20px;
     font-weight: bold;
     
 }
@@ -40,21 +38,36 @@ body {
     transform: translateY(-3px);
 }
 
+a {
+    text-decoration: none;
+}
+
+
 .navbar .logo-nav {
     height: 50px;
 }
 
-/* Estilo para la racha */
-.racha {
-    font-weight: bold;
-    font-size: 24px;
-    transition: color 0.3s ease;
+
+.open-modal-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    outline: none;
+    cursor: default;
 }
 
-.racha.gold {
-    color: gold; /* Color dorado cuando la racha es completa */
+.open-modal-btn:focus,
+.open-modal-btn:hover {
+    border: none;
+    box-shadow: none;
+    outline: none;
 }
 
+.divImportantes{
+    background: #b39ddb;
+}
 
 .importantes {
     background: #ffffff;

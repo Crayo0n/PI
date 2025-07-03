@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Editar Actividad</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/AcActividad.css') }}">
 </head>
+
 <body>
     <div class="container">
         <nav class="navbar">
-            <span class="racha">120 🔥</span>
+            <span id="racha-fuego" class="racha" style="color: {{ color_racha }}">
+                {{ racha }} 🔥
+                <span class="manita">✋</span>
+                <span class="carita">😊</span>
+            </span>
             <a href="#">Perfil</a>
             <a href="#">Rutinas</a>
             <a href="{{ url_for('actividades') }}">
@@ -20,7 +26,8 @@
 
         <div class="crear-actividad">
 
-            <img id="imagen-actividad" src="{{ url_for('static', filename='img/imagen1.png') }}" alt="Imagen de actividad" class="imagen-actividad">
+            <img id="imagen-actividad" src="{{ url_for('static', filename='img/imagen1.png') }}"
+                alt="Imagen de actividad" class="imagen-actividad">
 
             <input type="text" id="nombre" name="nombre" class="actividad-titulo" placeholder="Tarea" required>
 
@@ -36,24 +43,24 @@
             <form>
                 <label for="fecha">Fecha</label>
                 <input type="date" id="fecha" name="fecha">
-                
+
                 <label for="repetir">Repetir</label>
                 <select id="repetir" name="repetir">
                     <option value="diario">Diario</option>
                     <option value="semanal">Semanal</option>
                     <option value="mensual">Mensual</option>
                 </select>
-                
+
                 <label for="hora">Hora</label>
                 <input type="time" id="hora" name="hora">
-                
+
                 <label for="prioridad">Prioridad</label>
                 <select id="prioridad" name="prioridad">
                     <option value="alta">Alta</option>
                     <option value="media">Media</option>
                     <option value="baja">Baja</option>
                 </select>
-                
+
                 <label for="descripcion">Descripción</label>
                 <textarea id="descripcion" name="descripcion"></textarea>
 
@@ -68,4 +75,5 @@
         }
     </script>
 </body>
+
 </html>

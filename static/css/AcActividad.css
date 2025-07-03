@@ -17,20 +17,46 @@ body {
     align-items: center;
     background: #b39ddb;
     padding: 10px 30px;
-    width: 100vw;
-    margin: 0;
-    border-radius: 0;
+    font-weight: bold;
+    
 }
 
 .navbar a {
-    color: #2c2c2c;
+    color: #4545EA;
     text-decoration: none;
     margin: 0 10px;
+    font-size: 25px;
+    font-weight: bolder;
 }
 
-.logo-nav {
-    height: 40px;
+.navbar a:hover{
+    transform: scale(1.1);
+    color: white; /* Texto blanco */
+    transform: translateY(-3px);
 }
+
+.navbar .logo-nav {
+    height: 50px;
+}
+
+
+.open-modal-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    outline: none;
+    cursor: default;
+}
+
+.open-modal-btn:focus,
+.open-modal-btn:hover {
+    border: none;
+    box-shadow: none;
+    outline: none;
+}
+
 
 .crear-actividad {
     background: white;
@@ -44,7 +70,7 @@ body {
 }
 
 .imagen-actividad {
-    max-width: 200px; 
+    max-width: 400px; 
     height: auto;
     display: block;
     margin: 0 auto 20px auto; 
@@ -90,6 +116,10 @@ body {
     cursor: pointer;
 }
 
+.color-box:hover{
+    transform: scale(1.1);
+}
+
 .pink { background-color: #f48fb1; }
 .orange { background-color: #ffb74d; }
 .red { background-color: #f06292; }
@@ -105,16 +135,18 @@ form {
 }
 
 form label {
-    font-weight: bold;
+    font-weight: bolder;
+    font-size: 20px;
     margin-top: 10px;
     display: block;
+    color: #4f4f4f;
 }
 
 form input, form select, form textarea {
     width: 100%;
     padding: 12px;
     margin: 10px 0;
-    border-radius: 5px;
+    border-radius: 10px;
     border: 1px solid #ddd;
     font-size: 16px; 
 }
@@ -130,10 +162,76 @@ button.crear-btn {
     color: white;
     border: none;
     border-radius: 20px;
-    font-size: 18px;
+    font-size: 25px;
+    font-weight: bolder;
     cursor: pointer;
 }
 
 button.crear-btn:hover {
     background-color: #7b1fa2;
+    transform: scale(1.1);
+}
+
+
+
+
+/* Animación de fuego */
+@keyframes fuego {
+    0% {
+        color: #ff5722;
+        text-shadow: 0 0 20px #ff5722, 0 0 30px #ff5722, 0 0 50px #ff5722, 0 0 70px #ff5722;
+    }
+    50% {
+        color: #ff9800;
+        text-shadow: 0 0 20px #ff9800, 0 0 30px #ff9800, 0 0 50px #ff9800, 0 0 70px #ff9800;
+    }
+    100% {
+        color: #ff5722;
+        text-shadow: 0 0 20px #ff5722, 0 0 30px #ff5722, 0 0 50px #ff5722, 0 0 70px #ff5722;
+    }
+}
+
+/* Fuego en el texto */
+.racha {
+    font-weight: bold;
+    font-size: 24px;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    animation: fuego 1.5s infinite alternate; /* Animación para el fuego */
+}
+
+/* Fuego dorado cuando la racha es alta */
+.racha.gold {
+    color: gold; /* Color dorado cuando la racha es completa */
+    animation: none; /* Detener la animación cuando la racha es dorada */
+    text-shadow: 0 0 15px gold, 0 0 30px gold, 0 0 45px gold, 0 0 60px gold;
+}
+
+/* Animación de la manita y carita */
+@keyframes saludo {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) translateY(10px);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5) translateY(10px);
+    }
+}
+
+/* Manita y carita que aparecen solo cuando se alcanza una racha mayor */
+.racha .manita, .racha .carita {
+    display: none;
+    animation: saludo 2s ease-out forwards;
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.racha.saludar .manita, .racha.saludar .carita {
+    display: block;
 }
