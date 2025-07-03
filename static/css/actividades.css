@@ -205,3 +205,34 @@ h2{
 .naranja { background: #ffb74d; color: white; }
 .gris { background: #e0e0e0; color: #333; }
 .verde { background: #a5d6a7; color: #1b5e20; }
+
+/* Animación de fuego */
+@keyframes fuego {
+    0% {
+        color: #ff5722;
+        text-shadow: 0 0 20px #ff5722, 0 0 30px #ff5722, 0 0 50px #ff5722, 0 0 70px #ff5722;
+    }
+    50% {
+        color: #ff9800;
+        text-shadow: 0 0 20px #ff9800, 0 0 30px #ff9800, 0 0 50px #ff9800, 0 0 70px #ff9800;
+    }
+    100% {
+        color: #ff5722;
+        text-shadow: 0 0 20px #ff5722, 0 0 30px #ff5722, 0 0 50px #ff5722, 0 0 70px #ff5722;
+    }
+}
+
+/* Fuego en el texto */
+.racha {
+    font-weight: bold;
+    font-size: 24px;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    animation: fuego 1.5s infinite alternate; /* Animación para el fuego */
+}
+
+/* Fuego dorado cuando la racha es alta */
+.racha.gold {
+    color: gold; /* Color dorado cuando la racha es completa */
+    animation: none; /* Detener la animación cuando la racha es dorada */
+    text-shadow: 0 0 15px gold, 0 0 30px gold, 0 0 45px gold, 0 0 60px gold;
+}
