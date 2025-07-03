@@ -8,19 +8,20 @@
 <body>
 
     <!-- Barra de navegación -->
-    <nav class="navbar">
-        <div class="box">
-            <button class="open-modal-btn">
-                <span class="racha" id="racha-fuego" style="color: {{ color_racha }}">{{ racha }} 🔥</span>
-            </button>
-        </div>
+<nav class="navbar">
+    <div class="box">
+        <button class="open-modal-btn">
+            <span id="racha-fuego" class="racha" style="color: {{ color_racha }}">{{ racha }} 🔥</span>
+        </button>
+    </div>
 
-        <a href="#">Perfil</a>
-        <a href="#">Rutinas</a>
-        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
-        <a href="#">Actividades</a>
-        <a href="{{ url_for('login') }}">Cerrar Sesión</a>
-    </nav>
+    <a href="#">Perfil</a>
+    <a href="#">Rutinas</a>
+    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
+    <a href="#">Actividades</a>
+    <a href="{{ url_for('login') }}">Cerrar Sesión</a>
+</nav>
+
 
     <!-- Actividades del día -->
     <section class="importantes">
