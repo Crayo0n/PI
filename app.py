@@ -82,7 +82,14 @@ def registrarse():
 
     return render_template('registrarse.html', errores=errores)
 
+@app.route('/nueva-actividad', endpoint='NvActividad')   
+def nueva_actividad():
+    return render_template('NvActividad.html')  
 
+@app.route('/editar-actividad', endpoint='AcActividad')
+def editar_actividad():
+    return render_template('AcActividad.html')
+    
 # Ruta para manejar las actividades
 @app.route('/actividades', methods=['GET', 'POST'])
 def actividades():
