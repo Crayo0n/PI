@@ -19,8 +19,8 @@
                 </span>
             </button>
         </div>
-        <a href="#">Perfil</a>
-        <a href="#">Rutinas</a>
+        <a href="{{ url_for('perfil')}}">Perfil</a>
+        <a href="rutinas">Rutinas</a>
         <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
         <a href="#">Actividades</a>
         <a href="{{ url_for('login') }}">Cerrar Sesión</a>
