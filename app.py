@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 from db import db  
+import calendar
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -90,6 +92,48 @@ def AcActividad():
     return render_template('AcActividad.html', racha=racha, color_racha=color_racha)
 
     
+# Ruta perfil
+@app.route('/perfil')
+def perfil():
+
+    from datetime import datetime
+    import calendar
+
+    hoy = datetime.today()
+    anio = hoy.year
+    mes = hoy.month
+
+    # Ejemplo de días con actividades
+    dias_cumplidos = {
+        2: 'una',
+        3: 'completo',
+        5: 'una',
+        8: 'completo',
+        10: 'una',
+        12: 'completo',
+    }
+
+    # Nombre del mes en español
+    meses_es = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    nombre_mes = meses_es[mes - 1]
+
+    cal = calendar.Calendar(firstweekday=6)
+    semanas = cal.monthdayscalendar(anio, mes)
+
+    return render_template("perfil.html", semanas=semanas, anio=anio, mes=nombre_mes, dias_cumplidos=dias_cumplidos, racha=racha, color_racha=color_racha)
+
+@app.route('/rutinas')
+def rutinas():
+
+    return render_template('rutinas.html')
+
+    # Obtener el calendario como matriz (cada fila = semana)
+    cal = calendar.Calendar(firstweekday=0)
+    semanas = cal.monthdayscalendar(anio, mes)
+
+    return render_template("perfil.html", semanas=semanas, anio=anio, mes=nombre_mes)
+
 # Ruta para manejar las actividades
 @app.route('/actividades', methods=['GET', 'POST'])
 def actividades():
