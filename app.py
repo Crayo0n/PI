@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
-from db import db  
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, session
+from db import db
+import tablas.actividades  
 
 
 app = Flask(__name__)
@@ -34,6 +35,8 @@ def login():
         # Aquí validas el usuario 
         usuario = tablas.Usuarios.query.filter_by(email=email).first()
         if usuario and usuario.contrasena == password:
+            usuarioID = tablas.query
+            session['usuario_id'] = usuarioID
             return redirect(url_for('actividades'))
         else:
             error = "Credenciales incorrectas"
@@ -81,9 +84,37 @@ def registrarse():
 
     return render_template('registrarse.html', errores=errores)
 
-@app.route('/nueva_actividad')
+@app.route('/nueva_actividad',methods=['GET', 'POST'])
 def NvActividad():
-    return render_template('NvActividad.html', racha=racha, color_racha=color_racha)
+    errores = {}
+    if request.method == 'POST':
+        titulo = request.form.get('nombre', '').strip()
+        fecha = request.form.get('fecha', '').strip()
+        repeticion = request.form.get('repetir', '').strip()
+        hora = request.form.get('hora', '').strip()
+        prioridad = request.form.get('prioridad', '').strip()
+        descripcion = request.form.get('descripcion', '').strip()
+        rutaImagen = request.form.get('rutaImagen', '').strip()
+        
+        if not titulo or not fecha or not repeticion or not hora or not prioridad or not descripcion or not rutaImagen:
+            errores['empyValues'] = "Hay campos vacios"
+        else:
+            try:
+                nueva_tarea = tablas.actividades(
+                    titulo = titulo,
+                    fecha = fecha,
+                    repetir = repeticion,
+                    hora = hora,
+                    prioridad = prioridad,
+                    descripcion = descripcion,
+                    imagen = rutaImagen
+                )
+                db.session.add(nueva_tarea)
+                db.session.commit()
+                flash('Actividad agregada correctamente')
+            except Exception as e:
+                errores['dbError'] = 'Error al guardar actividad'
+    return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores = errores)
 
 @app.route('/editar_actividad')
 def AcActividad():

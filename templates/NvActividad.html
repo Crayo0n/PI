@@ -28,7 +28,25 @@
                 <a href="#">Actividades</a>
                 <a href="#">Cerrar Sesión</a>
             </nav>
+            <div class="info">
+                {% with mensajes = get_flashed_messages() %}
+                    {% if mensajes %}
+                        {% for msj in mensajes %}
+                            <h4>{{ msj }}</h4>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
 
+                {% if errores %}
+                    {% if errores.emptyValues %}
+                        <h4>{{ errores.emptyValues }}</h4>
+                {% endif %}
+                {% if errores.dbError %}
+        <h4>{{ errores.dbError }}</h4>
+    {% endif %}
+{% endif %}
+
+            </div>
             <div class="crear-actividad">
 
                 <img id="imagen-actividad" src="{{ url_for('static', filename='img/imagen1.png') }}"
@@ -68,6 +86,8 @@
 
                     <label for="descripcion">Descripción</label>
                     <textarea id="descripcion" name="descripcion"></textarea>
+                    
+                    <input type = "hidden" id="rutaImagen" name="rutaImagen" value="static/img/imagen1.png">
 
                     <button type="submit" class="crear-btn">Crear</button>
                 </form>
@@ -77,6 +97,7 @@
         <script>
             function cambiarImagen(imagen) {
                 document.getElementById('imagen-actividad').src = imagen;
+                document.getElementById('rutaImagen').value = imagen;
             }
         </script>
     </body>
