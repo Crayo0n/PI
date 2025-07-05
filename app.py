@@ -138,7 +138,7 @@ def actividades():
                 'titulo': actividad.titulo,
                 'descripcion': actividad.descripcion,
                 'hora': actividad.hora.strftime('%H:%M') if actividad.hora else '',
-                'imagen': actividad.imagen
+                'imagen': actividad.imagen,
                 'completada': actividad.completada
             })
             
