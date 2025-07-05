@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
-from db import db  
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, session
+from db import db
+import tablas.actividades  
 
 
 app = Flask(__name__)
@@ -31,9 +32,10 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        # Aquí validas el usuario 
+        # Aquí se valida el usuario 
         usuario = tablas.Usuarios.query.filter_by(email=email).first()
         if usuario and usuario.contrasena == password:
+            session['usuario_id'] = usuario.id 
             return redirect(url_for('actividades'))
         else:
             error = "Credenciales incorrectas"
@@ -81,9 +83,39 @@ def registrarse():
 
     return render_template('registrarse.html', errores=errores)
 
-@app.route('/nueva_actividad')
+@app.route('/nueva_actividad',methods=['GET', 'POST'])
 def NvActividad():
-    return render_template('NvActividad.html', racha=racha, color_racha=color_racha)
+    errores = {}
+    if request.method == 'POST':
+        titulo = request.form.get('nombre', '').strip()
+        fecha = request.form.get('fecha', '').strip()
+        repeticion = request.form.get('repetir', '').strip()
+        hora = request.form.get('hora', '').strip()
+        prioridad = request.form.get('prioridad', '').strip()
+        descripcion = request.form.get('descripcion', '').strip()
+        rutaImagen = request.form.get('rutaImagen', '').strip()
+        
+        if not titulo or not fecha or not repeticion or not hora or not prioridad or not descripcion or not rutaImagen:
+            errores['empyValues'] = "Hay campos vacios"
+        else:
+            try:
+                usuario_id = session.get('usuario_id')
+                nueva_tarea = tablas.actividades(
+                    titulo = titulo,
+                    fecha = fecha,
+                    repetir = repeticion,
+                    hora = hora,
+                    prioridad = prioridad,
+                    descripcion = descripcion,
+                    imagen = rutaImagen,
+                    usuario_id=usuario_id
+                )
+                db.session.add(nueva_tarea)
+                db.session.commit()
+                flash('Actividad agregada correctamente')
+            except Exception as e:
+                errores['dbError'] = 'Error al guardar actividad'
+    return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores = errores)
 
 @app.route('/editar_actividad')
 def AcActividad():
@@ -94,16 +126,26 @@ def AcActividad():
 @app.route('/actividades', methods=['GET', 'POST'])
 def actividades():
     global racha, color_racha
-
+    usuario_id = session.get('usuario_id')
     if request.method == 'POST':
+        actividades_usuario = tablas.Actividades.query.filter_by(usuario_id=usuario_id).all()
+
+    # Transformar datos a diccionarios para usar en la interfaz
+        tareas_importantes = []
+        for actividad in actividades_usuario:
+            tareas_importantes.append({
+                'id': actividad.id,
+                'titulo': actividad.titulo,
+                'descripcion': actividad.descripcion,
+                'hora': actividad.hora.strftime('%H:%M') if actividad.hora else '',
+                'imagen': actividad.imagen
+                'completada': actividad.completada
+            })
+            
         tarea_completada = request.form.getlist('tarea_completada')
-
         for idx, tarea in enumerate(tareas_importantes):
-            if str(idx) in tarea_completada:
-                tareas_importantes[idx]['completada'] = True
-            else:
-                tareas_importantes[idx]['completada'] = False
-
+            tarea['completada'] = str(idx) in tarea_completada
+        
         # Verificar si todas las tareas están completadas
         if all(tarea['completada'] for tarea in tareas_importantes):
             racha += 1

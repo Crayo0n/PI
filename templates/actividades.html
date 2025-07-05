@@ -33,8 +33,8 @@
                 </div>
             </div>
         </div>
-        <a href="#">Perfil</a>
-        <a href="#">Rutinas</a>
+        <a href="{{ url_for('perfil')}}">Perfil</a>
+        <a href="rutinas">Rutinas</a>
         <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
         <a href="#">Actividades</a>
         <a href="{{ url_for('login') }}">Cerrar Sesión</a>
@@ -47,17 +47,18 @@
                 <a href="{{ url_for('AcActividad') }}" class="editar-btn">Editar</a>
             </div>
             <div class="tarjetas">
-                {% for tarea in tareas_importantes %}
-                <div class="tarjeta {{ tarea.color }} {% if tarea.completada %}completada{% endif %}">
-                    <img src="{{ url_for('static', filename='img/icono-tarea.png') }}" class="icono-tarea">
+            {% for tarea in tareas_importantes %}
+                <div class="tarjeta {% if tarea.completada %}completada{% endif %}">
+                    <img src="{{ url_for('static', filename=tarea.imagen) }}" class="icono-tarea">
+                    <h3>{{ tarea.titulo }}</h3>
                     <span>{{ tarea.hora }}</span>
                     <p class="descripcion">{{ tarea.descripcion }}</p>
                     <form method="POST" style="display: inline;">
-                        <input type="checkbox" class="tarea-checkbox" data-idx="{{ loop.index0 }}" {% if
-                            tarea.completada %}checked{% endif %}>
+                        <input type="checkbox" class="tarea-checkbox" data-idx="{{ loop.index0 }}" {% if tarea.completada %}checked{% endif %}>
                     </form>
                 </div>
-                {% endfor %}
+            {% endfor %}
+
             </div>
         </section>
     </div>
@@ -70,13 +71,15 @@
             </div>
             <div class="tarjetas calendario-grid">
                 {% for tarea in tareas_importantes %}
-                <div class="tarjeta {{ tarea.color }} {% if tarea.completada %}completada{% endif %}">
-                    <img src="{{ url_for('static', filename='img/icono-tarea.png') }}" class="icono-tarea">
+                <div class="tarjeta {% if tarea.completada %}completada{% endif %}">
+                    <img src="{{ url_for('static', filename=tarea.imagen) }}" class="icono-tarea">
+                    <h3>{{ tarea.titulo }}</h3>
                     <span>{{ tarea.hora }}</span>
                     <p class="descripcion">{{ tarea.descripcion }}</p>
                     <input type="checkbox" class="custom-checkbox" {% if tarea.completada %}checked{% endif %}>
                 </div>
                 {% endfor %}
+
             </div>
         </section>
     </div>

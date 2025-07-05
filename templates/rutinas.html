@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Rutinas - Priority Pulse</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/rutinas.css') }}">
+</head>
+<body>
+
+
+  <nav class="navbar">
+    <div class="box">
+      <button class="open-modal-btn">
+        <span id="racha-fuego" class="racha" style="color: {{ color_racha }}">
+          {{ racha }} 🔥
+          <span class="manita">✋</span>
+          <span class="carita">😊</span>
+        </span>
+      </button>
+    </div>
+    <a href="{{ url_for('perfil') }}">Perfil</a>
+    <a href="{{ url_for('rutinas') }}">Rutinas</a>
+    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
+    <a href="{{ url_for('actividades') }}">Actividades</a>
+    <a href="{{ url_for('login') }}">Cerrar Sesión</a>
+  </nav>
+
+
+  <main class="contenedor">
+    <h1>Rutinas</h1>
+    <div class="tarjetas">
+      {% for rutina in rutinas %}
+      <div class="tarjeta">
+        <img src="{{ url_for('static', filename=rutina.img) }}" alt="{{ rutina.title }}">
+        <h2>{{ rutina.title }}</h2>
+        <p><strong>Objetivo:</strong> {{ rutina.objective }}</p>
+        <ul>
+          {% for act in rutina.activities %}
+            <li>{{ act }}</li>
+          {% endfor %}
+        </ul>
+        <a href="{{ url_for('nueva_actividad') }}?rutina_id={{ rutina.id }}" class="btn">
+          Agregar a Actividades
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </main>
+
+</body>
+</html>
