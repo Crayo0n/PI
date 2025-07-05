@@ -191,8 +191,7 @@ h2{
     border-radius: 20px;
     padding: 15px;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
     position: relative;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     transition: background 0.3s, transform 0.3s;
@@ -202,9 +201,15 @@ h2{
     transform: scale(1.05);
 }
 
+.tarjeta h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
 .tarjeta span {
     font-weight: bolder;
     font-size: 16px;
+    margin-bottom: 5px;
 }
 
 .tarjeta .descripcion {
@@ -212,20 +217,14 @@ h2{
     font-weight: bolder;
     color: #444;
     flex-grow: 1;
-    margin-left: 5px;
+    margin-top: 5px;
 }
 
 .tarjeta input[type="checkbox"] {
     position: absolute;
     right: 15px;
+    top: 15px;
 }
-
-/* Colores personalizados */
-.azul { background: #4f83cc; color: white; }
-.rosa { background: #f48fb1; color: white; }
-.naranja { background: #ffb74d; color: white; }
-.gris { background: #e0e0e0; color: #333; }
-.verde { background: #a5d6a7; color: #1b5e20; }
 
 /* Fogata Container */
 .fogata-container {

@@ -2,12 +2,10 @@ const checkboxes = document.querySelectorAll('.tarea-checkbox');
 
 checkboxes.forEach(checkbox => {
     checkbox.addEventListener('change', function() {
-        // Obtener las tareas completadas
         const tarea_completada = Array.from(checkboxes)
             .filter(cbx => cbx.checked)
-            .map(cbx => cbx.getAttribute('data-idx')); // Obtener el índice de las tareas completadas
+            .map(cbx => cbx.getAttribute('data-idx'));
 
-        // Enviar los datos al backend usando Fetch API
         fetch('/actualizar_tarea', {
             method: 'POST',
             headers: {
@@ -17,10 +15,7 @@ checkboxes.forEach(checkbox => {
         })
         .then(response => response.json())
         .then(data => {
-            // Actualizar el contador de racha
             document.querySelector('#dias-racha').innerText = data.racha;
-            
-            // Actualizar la fogata
             actualizarFogata(data.racha);
         });
     });
@@ -28,11 +23,9 @@ checkboxes.forEach(checkbox => {
 
 function actualizarFogata(racha) {
     const fogata = document.getElementById('fogata');
-    // Calcular fase (cada 10 días de racha es una fase)
     const fase = Math.min(Math.floor(racha / 10), 19);
     fogata.className = `fogata etapa-${fase}`;
     
-    // Efecto especial cada 10 días (nueva fase)
     if (racha % 10 === 0 && racha > 0) {
         fogata.classList.add('saludar');
         setTimeout(() => fogata.classList.remove('saludar'), 2000);
@@ -54,7 +47,6 @@ function crearChispas(cantidad) {
         const spark = document.createElement('div');
         spark.className = 'spark';
         
-        // Posición y animación aleatoria
         const posX = (Math.random() - 0.5) * 100;
         const duration = 0.8 + Math.random() * 1.2;
         const delay = Math.random() * 0.5;
@@ -74,10 +66,8 @@ function crearChispas(cantidad) {
             left: 50%;
             opacity: 0;
             box-shadow: 0 0 5px ${fase >= 15 ? '#00bcd4' : (fase >= 10 ? '#ff3d00' : '#ff9800')};
-            animation: spark-fly ${duration}s ease-in ${delay}s forwards;
         `;
         
-        // Animación de la chispa
         const keyframes = `
             @keyframes spark-fly-${i} {
                 0% { 
