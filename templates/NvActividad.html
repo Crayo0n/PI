@@ -12,7 +12,7 @@
             <nav class="navbar">
                 <div class="box">
                     <button class="open-modal-btn">
-                        <span id="racha-fuego" class="racha" style="color: {{ color_racha }}">
+                        <span id="racha-fuego" class="racha" >
                             {{ racha }} 🔥
                             <span class="manita">✋</span>
                             <span class="carita">😊</span>
@@ -22,10 +22,9 @@
                 </div>
                 <a href="#">Perfil</a>
                 <a href="#">Rutinas</a>
-                <a href="{{ url_for('actividades') }}">
                     <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
                 </a>
-                <a href="#">Actividades</a>
+                <a href="{{ url_for('actividades') }}">Actividades</a>
                 <a href="#">Cerrar Sesión</a>
             </nav>
             <div class="info">
@@ -63,7 +62,7 @@
                     <div class="color-box purple" onclick="cambiarImagen('static/img/imagen6.png')"></div>
                 </div>
 
-                <form>
+                <form method="POST" action="{{ url_for('NvActividad') }}">
                     <label for="fecha">Fecha</label>
                     <input type="date" id="fecha" name="fecha">
 

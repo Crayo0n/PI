@@ -113,6 +113,7 @@ def NvActividad():
                 db.session.add(nueva_tarea)
                 db.session.commit()
                 flash('Actividad agregada correctamente')
+                
             except Exception as e:
                 errores['dbError'] = 'Error al guardar actividad'
     return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores = errores)
@@ -126,36 +127,73 @@ def AcActividad():
 @app.route('/actividades', methods=['GET', 'POST'])
 def actividades():
     global racha, color_racha
+
+    # Validar sesión
     usuario_id = session.get('usuario_id')
-    if request.method == 'POST':
-        actividades_usuario = tablas.Actividades.query.filter_by(usuario_id=usuario_id).all()
+    if not usuario_id:
+        return redirect(url_for('login'))
+
+    # Obtener actividades del usuario
+    actividades_usuario = tablas.Actividades.query.filter_by(usuario_id=usuario_id).all()
 
     # Transformar datos a diccionarios para usar en la interfaz
-        tareas_importantes = []
-        for actividad in actividades_usuario:
-            tareas_importantes.append({
-                'id': actividad.id,
-                'titulo': actividad.titulo,
-                'descripcion': actividad.descripcion,
-                'hora': actividad.hora.strftime('%H:%M') if actividad.hora else '',
-                'imagen': actividad.imagen
-                'completada': actividad.completada
-            })
-            
+    tareas_importantes = []
+    for actividad in actividades_usuario:
+        tareas_importantes.append({
+            'id': actividad.id,
+            'titulo': actividad.titulo,
+            'descripcion': actividad.descripcion,
+            'hora': actividad.hora.strftime('%H:%M') if actividad.hora else '',
+            'imagen': actividad.imagen,
+            'completada': False  # Esto se puede actualizar después si agregas un campo de estado
+        })
+
+    if request.method == 'POST':
         tarea_completada = request.form.getlist('tarea_completada')
         for idx, tarea in enumerate(tareas_importantes):
             tarea['completada'] = str(idx) in tarea_completada
-        
-        # Verificar si todas las tareas están completadas
+
         if all(tarea['completada'] for tarea in tareas_importantes):
             racha += 1
-            color_racha = 'gold'  # Cambia la racha a dorado si todas las tareas están completadas
+            color_racha = 'gold'
         else:
             color_racha = 'default'
 
         return redirect(url_for('actividades'))
 
     return render_template('actividades.html', tareas_importantes=tareas_importantes, racha=racha, color_racha=color_racha)
+
+    # global racha, color_racha
+    # usuario_id = session.get('usuario_id')
+    # if request.method == 'POST':
+    #     actividades_usuario = tablas.Actividades.query.filter_by(usuario_id=usuario_id).all()
+
+    # # Transformar datos a diccionarios para usar en la interfaz
+    #     tareas_importantes = []
+    #     for actividad in actividades_usuario:
+    #         tareas_importantes.append({
+    #             'id': actividad.id,
+    #             'titulo': actividad.titulo,
+    #             'descripcion': actividad.descripcion,
+    #             'hora': actividad.hora.strftime('%H:%M') if actividad.hora else '',
+    #             'imagen': actividad.imagen,
+    #             'completada': actividad.completada
+    #         })
+            
+    #     tarea_completada = request.form.getlist('tarea_completada')
+    #     for idx, tarea in enumerate(tareas_importantes):
+    #         tarea['completada'] = str(idx) in tarea_completada
+        
+    #     # Verificar si todas las tareas están completadas
+    #     if all(tarea['completada'] for tarea in tareas_importantes):
+    #         racha += 1
+    #         color_racha = 'gold'  # Cambia la racha a dorado si todas las tareas están completadas
+    #     else:
+    #         color_racha = 'default'
+
+    #     return redirect(url_for('actividades'))
+
+    # return render_template('actividades.html', tareas_importantes=tareas_importantes, racha=racha, color_racha=color_racha)
 
 # Endpoint para manejar la actualización de las tareas
 @app.route('/actualizar_tarea', methods=['POST'])

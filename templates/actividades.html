@@ -12,17 +12,16 @@
     <nav class="navbar">
         <div class="box">
             <button class="open-modal-btn">
-                <span id="racha-fuego" class="racha" style="color: {{ color_racha }}">
+                <span id="racha-fuego" class="racha" >
                     {{ racha }} 🔥
                     <span class="manita">✋</span>
                     <span class="carita">😊</span>
                 </span>
             </button>
         </div>
-        <a href="{{ url_for('perfil')}}">Perfil</a>
         <a href="rutinas">Rutinas</a>
         <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
-        <a href="#">Actividades</a>
+        <a href="{{ url_for('actividades') }}">Actividades</a>
         <a href="{{ url_for('login') }}">Cerrar Sesión</a>
     </nav>
 
