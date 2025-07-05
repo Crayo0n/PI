@@ -48,6 +48,7 @@
             </div>
             <div class="crear-actividad">
 
+                <form method="POST" action="{{ url_for('PostNvActividad') }}">
                 <img id="imagen-actividad" src="{{ url_for('static', filename='img/imagen1.png') }}"
                     alt="Imagen de actividad" class="imagen-actividad">
 
@@ -62,7 +63,6 @@
                     <div class="color-box purple" onclick="cambiarImagen('static/img/imagen6.png')"></div>
                 </div>
 
-                <form method="POST" action="{{ url_for('NvActividad') }}">
                     <label for="fecha">Fecha</label>
                     <input type="date" id="fecha" name="fecha">
 

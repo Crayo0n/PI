@@ -12,6 +12,5 @@ class Actividades(db.Model):
     descripcion = db.Column(db.Text, nullable=True)
     imagen = db.Column(db.String(200), nullable=True)  # ruta a la imagen
     completada = db.Column(db.Boolean, default=False, nullable=False) 
-
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     usuario = db.relationship('Usuarios', backref='actividades')

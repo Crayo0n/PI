@@ -5,10 +5,22 @@
     <meta charset="UTF-8">
     <title>Actividades - Priority Pulse</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/actividades.css') }}">
+    
 </head>
 
 <body>
-
+    <!--Errores-->
+    {% if errores and errores.actividades_error %}
+            <script>
+                Swal.fire({
+                    title: 'Mensaje',
+                    text: '{{ errores.actividades_error }}',  
+                    icon: 'error',            
+                    confirmButtonText: 'Aceptar'
+                });
+            </script>
+    {% endif %}
+    <!--Errores-->
     <nav class="navbar">
         <div class="box">
             <div class="fogata-container">
@@ -39,7 +51,7 @@
         <a href="{{ url_for('login') }}">Cerrar Sesión</a>
     </nav>
 
-    <div class="divImportantes">
+    <!-- <div class="divImportantes">
         <section class="importantes">
             <div class="importantes-header">
                 <h2>Actividades Importantes del Día</h2>
@@ -59,18 +71,25 @@
             {% endfor %}
             </div>
         </section>
-    </div>
+    </div> -->
 
-    <div class="Tareas_Dia">
+    {% if errores and errores.no_actividades %}
+        <div class="calendario-header">
+            <h2>No hay actividades para mostrar</h2>
+            <a href="{{ url_for('NvActividad') }}" class="crear-actividad-btn"><h2>Crear mi nueva actividad</h2></a>
+        </div>
+s
+    {% elif tareas_importantes|length > 0 %}    
+        <div class="Tareas_Dia">
         <section class="calendario">
             <div class="calendario-header">
-                <h2>Lunes 28</h2>
+                <h2>Tareas por completar</h2>
                 <a href="{{ url_for('NvActividad') }}" class="agregar-btn">Agregar</a>
             </div>
             <div class="tarjetas calendario-grid">
                 {% for tarea in tareas_importantes %}
                 <div class="tarjeta {% if tarea.completada %}completada{% endif %}">
-                    <img src="{{ url_for('static', filename=tarea.imagen) }}" class="icono-tarea">
+                    <img src="{{ tarea.imagen }}" class="icono-tarea">
                     <h3>{{ tarea.titulo }}</h3>
                     <span>{{ tarea.hora }}</span>
                     <p class="descripcion">{{ tarea.descripcion }}</p>
@@ -79,9 +98,16 @@
                 {% endfor %}
             </div>
         </section>
-    </div>
-
+        </div>
+    {% else %}
+        <div class="calendario-header">
+            <h2>Hay un pequeño inconveniente para mostrar las tareas</h2>
+        </div>
+    {% endif %}
     <script>
+        let rachajs = 0; // Inicializar racha
+        let color_racha = 'default'; // Inicializar color de racha
+
         const checkboxes = document.querySelectorAll('.tarea-checkbox');
 
         checkboxes.forEach(checkbox => {
@@ -179,7 +205,8 @@
         }
         
         // Inicializar fogata con la racha actual
-        actualizarFogata({{ racha }});
+        actualizarFogata(rachajs);
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

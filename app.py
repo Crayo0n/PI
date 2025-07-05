@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, session
 from db import db
-import tablas.actividades  
-
-
+from sqlalchemy.exc import SQLAlchemyError 
+from flask import jsonify
+from datetime import datetime
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
@@ -17,6 +17,7 @@ racha = 0
 color_racha = 'default'  # Racha normal al principio
 
 import tablas
+
 
 # Configuración de la base de datos
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usuarios.db'
@@ -82,40 +83,64 @@ def registrarse():
         return render_template('registrarse.html', errores=errores, error=error)
 
     return render_template('registrarse.html', errores=errores)
-
-@app.route('/nueva_actividad',methods=['GET', 'POST'])
+@app.route('/nueva_actividad',methods=['GET'])
 def NvActividad():
+    racha = 0
+    color_racha = 'default'
     errores = {}
-    if request.method == 'POST':
-        titulo = request.form.get('nombre', '').strip()
-        fecha = request.form.get('fecha', '').strip()
-        repeticion = request.form.get('repetir', '').strip()
-        hora = request.form.get('hora', '').strip()
-        prioridad = request.form.get('prioridad', '').strip()
-        descripcion = request.form.get('descripcion', '').strip()
-        rutaImagen = request.form.get('rutaImagen', '').strip()
+    return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores=errores)
+
+@app.route('/nueva_actividad',methods=['POST'])
+def PostNvActividad():
+    print("Recibiendo datos de nueva actividad")
+    errores = {}
+    titulo = request.form.get('nombre', '').strip()
+    fecha = request.form.get('fecha', '').strip()
+    repeticion = request.form.get('repetir', '').strip()
+    hora = request.form.get('hora', '').strip()
+    prioridad = request.form.get('prioridad', '').strip()
+    descripcion = request.form.get('descripcion', '').strip()
+    rutaImagen = request.form.get('rutaImagen', '').strip()
         
-        if not titulo or not fecha or not repeticion or not hora or not prioridad or not descripcion or not rutaImagen:
-            errores['empyValues'] = "Hay campos vacios"
-        else:
-            try:
-                usuario_id = session.get('usuario_id')
-                nueva_tarea = tablas.actividades(
-                    titulo = titulo,
-                    fecha = fecha,
-                    repetir = repeticion,
-                    hora = hora,
-                    prioridad = prioridad,
-                    descripcion = descripcion,
-                    imagen = rutaImagen,
-                    usuario_id=usuario_id
-                )
-                db.session.add(nueva_tarea)
-                db.session.commit()
-                flash('Actividad agregada correctamente')
-                
-            except Exception as e:
-                errores['dbError'] = 'Error al guardar actividad'
+    if not titulo or not fecha or not repeticion or not hora or not prioridad or not descripcion or not rutaImagen:
+        errores['empyValues'] = "Hay campos vacios"
+    else:
+        print(f"Datos recibidos para actividad: {titulo}, {fecha}, {repeticion}, {hora}, {prioridad}, {descripcion}, {rutaImagen}")
+        try:
+            fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
+            hora_obj = datetime.strptime(hora, '%H:%M').time()
+        except ValueError:
+            errores['fechaError'] = 'Formato de fecha incorrecto. Use YYYY-MM-DD.'
+            print(f"Error de formato de fecha: {fecha}")
+            return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores=errores)
+        try:
+            usuario_id = session.get('usuario_id')
+            print(f"ID del usuario: {usuario_id}")
+            nueva_tarea = tablas.Actividades(
+                titulo = titulo,
+                fecha = fecha_obj,
+                repetir = repeticion,
+                hora = hora_obj,
+                prioridad = prioridad,
+                descripcion = descripcion,
+                imagen = rutaImagen,
+                usuario_id=usuario_id
+            )
+            print(f"Nueva tarea creada: {nueva_tarea}")
+            db.session.add(nueva_tarea)
+            db.session.commit()
+            flash('Actividad agregada correctamente')
+            return redirect(url_for('actividades'))
+        
+        except SQLAlchemyError as e:
+            errores['dbError'] = 'Error al guardar actividad en la base de datos'
+            print(f"Error al guardar actividad en la base de datos: {e}")
+            db.session.rollback()
+
+        except Exception as e:
+            print(f"Error al guardar actividad: {e}")
+            errores['dbError'] = 'Error al guardar actividad'
+            
     return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores = errores)
 
 @app.route('/editar_actividad')
@@ -127,74 +152,62 @@ def AcActividad():
 @app.route('/actividades', methods=['GET', 'POST'])
 def actividades():
     global racha, color_racha
+    racha = 0
+    color_racha = 'default'
+    errores = {}
 
-    # Validar sesión
     usuario_id = session.get('usuario_id')
     if not usuario_id:
+        flash('Debes iniciar sesión para continuar')
         return redirect(url_for('login'))
+    try:
+        # Obtener actividades del usuario
+        actividades_usuario = tablas.Actividades.query.filter_by(usuario_id=usuario_id).all()
+        print(f"Actividades del usuario {usuario_id}: {actividades_usuario}")
 
-    # Obtener actividades del usuario
-    actividades_usuario = tablas.Actividades.query.filter_by(usuario_id=usuario_id).all()
+        if not actividades_usuario:
+            errores['no_actividades'] = 'Error al obtener actividades.'
+            return render_template('actividades.html', tareas_importantes=[], racha=racha, color_racha=color_racha, errores=errores)
 
-    # Transformar datos a diccionarios para usar en la interfaz
-    tareas_importantes = []
-    for actividad in actividades_usuario:
-        tareas_importantes.append({
-            'id': actividad.id,
-            'titulo': actividad.titulo,
-            'descripcion': actividad.descripcion,
-            'hora': actividad.hora.strftime('%H:%M') if actividad.hora else '',
-            'imagen': actividad.imagen,
-            'completada': False  # Esto se puede actualizar después si agregas un campo de estado
-        })
+        # Transformar datos a diccionarios para usar en la interfaz
+        tareas_importantes = []
+        for actividad in actividades_usuario:
+            tareas_importantes.append({
+                'id': actividad.id,
+                'titulo': actividad.titulo,
+                'descripcion': actividad.descripcion,
+                'hora': actividad.hora.strftime('%H:%M') if actividad.hora else '',
+                'imagen': actividad.imagen,
+                'completada': False  
+            })
+        print(f"Tareas importantes: {tareas_importantes}")
+        if request.method == 'POST':
+            # Procesar las tareas completadas para la racha
+            tarea_completada = request.form.getlist('tarea_completada')
+            for idx, tarea in enumerate(tareas_importantes):
+                tarea['completada'] = str(idx) in tarea_completada
 
-    if request.method == 'POST':
-        tarea_completada = request.form.getlist('tarea_completada')
-        for idx, tarea in enumerate(tareas_importantes):
-            tarea['completada'] = str(idx) in tarea_completada
+            if all(tarea['completada'] for tarea in tareas_importantes):
+                racha += 1
+                color_racha = 'gold'
+            else:
+                color_racha = 'default'
 
-        if all(tarea['completada'] for tarea in tareas_importantes):
-            racha += 1
-            color_racha = 'gold'
-        else:
-            color_racha = 'default'
-
-        return redirect(url_for('actividades'))
-
-    return render_template('actividades.html', tareas_importantes=tareas_importantes, racha=racha, color_racha=color_racha)
-
-    # global racha, color_racha
-    # usuario_id = session.get('usuario_id')
-    # if request.method == 'POST':
-    #     actividades_usuario = tablas.Actividades.query.filter_by(usuario_id=usuario_id).all()
-
-    # # Transformar datos a diccionarios para usar en la interfaz
-    #     tareas_importantes = []
-    #     for actividad in actividades_usuario:
-    #         tareas_importantes.append({
-    #             'id': actividad.id,
-    #             'titulo': actividad.titulo,
-    #             'descripcion': actividad.descripcion,
-    #             'hora': actividad.hora.strftime('%H:%M') if actividad.hora else '',
-    #             'imagen': actividad.imagen,
-    #             'completada': actividad.completada
-    #         })
-            
-    #     tarea_completada = request.form.getlist('tarea_completada')
-    #     for idx, tarea in enumerate(tareas_importantes):
-    #         tarea['completada'] = str(idx) in tarea_completada
+            return redirect(url_for('actividades'))
         
-    #     # Verificar si todas las tareas están completadas
-    #     if all(tarea['completada'] for tarea in tareas_importantes):
-    #         racha += 1
-    #         color_racha = 'gold'  # Cambia la racha a dorado si todas las tareas están completadas
-    #     else:
-    #         color_racha = 'default'
+    except SQLAlchemyError as e:
+        errores['actividades_error'] = 'Error al obtener actividades de la base de datos'
+        print(f"Error al obtener actividades de la base de datos: {e}")
+        tareas_importantes = []
+        
+    except Exception as e:
+        errores['actividades_error'] = 'Error al obtener actividades'
+        print(f"Error al obtener actividades: {e}")
+        tareas_importantes = None
 
-    #     return redirect(url_for('actividades'))
+    return render_template('actividades.html', tareas_importantes=tareas_importantes, racha=racha, color_racha=color_racha, errores=errores)
 
-    # return render_template('actividades.html', tareas_importantes=tareas_importantes, racha=racha, color_racha=color_racha)
-
+    
 # Endpoint para manejar la actualización de las tareas
 @app.route('/actualizar_tarea', methods=['POST'])
 def actualizar_tarea():
