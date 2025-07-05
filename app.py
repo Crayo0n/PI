@@ -32,11 +32,10 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        # Aquí validas el usuario 
+        # Aquí se valida el usuario 
         usuario = tablas.Usuarios.query.filter_by(email=email).first()
         if usuario and usuario.contrasena == password:
-            usuarioID = tablas.query
-            session['usuario_id'] = usuarioID
+            session['usuario_id'] = usuario.id 
             return redirect(url_for('actividades'))
         else:
             error = "Credenciales incorrectas"
@@ -100,6 +99,7 @@ def NvActividad():
             errores['empyValues'] = "Hay campos vacios"
         else:
             try:
+                usuario_id = session.get('usuario_id')
                 nueva_tarea = tablas.actividades(
                     titulo = titulo,
                     fecha = fecha,
@@ -107,7 +107,8 @@ def NvActividad():
                     hora = hora,
                     prioridad = prioridad,
                     descripcion = descripcion,
-                    imagen = rutaImagen
+                    imagen = rutaImagen,
+                    usuario_id=usuario_id
                 )
                 db.session.add(nueva_tarea)
                 db.session.commit()
@@ -125,16 +126,26 @@ def AcActividad():
 @app.route('/actividades', methods=['GET', 'POST'])
 def actividades():
     global racha, color_racha
-
+    usuario_id = session.get('usuario_id')
     if request.method == 'POST':
+        actividades_usuario = tablas.Actividades.query.filter_by(usuario_id=usuario_id).all()
+
+    # Transformar datos a diccionarios para usar en la interfaz
+        tareas_importantes = []
+        for actividad in actividades_usuario:
+            tareas_importantes.append({
+                'id': actividad.id,
+                'titulo': actividad.titulo,
+                'descripcion': actividad.descripcion,
+                'hora': actividad.hora.strftime('%H:%M') if actividad.hora else '',
+                'imagen': actividad.imagen
+                'completada': actividad.completada
+            })
+            
         tarea_completada = request.form.getlist('tarea_completada')
-
         for idx, tarea in enumerate(tareas_importantes):
-            if str(idx) in tarea_completada:
-                tareas_importantes[idx]['completada'] = True
-            else:
-                tareas_importantes[idx]['completada'] = False
-
+            tarea['completada'] = str(idx) in tarea_completada
+        
         # Verificar si todas las tareas están completadas
         if all(tarea['completada'] for tarea in tareas_importantes):
             racha += 1
