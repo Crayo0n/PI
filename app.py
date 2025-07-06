@@ -3,7 +3,8 @@ from db import db
 from sqlalchemy.exc import SQLAlchemyError 
 from flask import jsonify
 from datetime import datetime
-import tablas.actividades
+from tablas.actividades import Actividades
+from tablas.usuarios import Usuarios
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -150,7 +151,7 @@ def PostNvActividad():
 @app.route('/editar_actividad/<int:id>', methods=['GET', 'POST'])
 def editar_actividad(id):
     errores = {}
-    actividad = db.session.get(actividades, id)
+    actividad = Actividades.query.get_or_404(id)
 
     if not actividad:
         flash('Actividad no encontrada', 'error')
@@ -197,19 +198,19 @@ def editar_actividad(id):
                 
         return render_template('editar_actividad.html', actividad=actividad, errores=errores)
 
-    return render_template('editar_actividad.html', actividad=actividad, errores=errores)
+    return render_template('AcActividad.html', actividad=actividad, errores=errores)
 
 # Ruta para eliminar actividad
-@app.route('/eliminar_actividad/<int:id>', methods=['GET', 'POST'])
+@app.route('/eliminar_actividad/<int:id>')
 def eliminar_actividad(id):
-    actividad = db.session.get(tablas.Actividades, id)
+    actividad = Actividades.query.get_or_404(id)
     
     if not actividad:
         flash('Actividad no encontrada', 'error')
         return redirect(url_for('actividades'))
 
     try:
-        db.session.delete(actividad)
+        actividad.estado = 0
         db.session.commit()
         flash('Actividad eliminada correctamente')
         return redirect(url_for('actividades'))
@@ -236,7 +237,7 @@ def actividades():
         return redirect(url_for('login'))
     try:
         # Obtener actividades del usuario
-        actividades_usuario = tablas.Actividades.query.filter_by(usuario_id=usuario_id).all()
+        actividades_usuario = tablas.Actividades.query.filter_by(usuario_id=usuario_id, estado=1).all()
         print(f"Actividades del usuario {usuario_id}: {actividades_usuario}")
 
         if not actividades_usuario:

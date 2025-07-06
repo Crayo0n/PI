@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <title>Actividades - Priority Pulse</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/actividades.css') }}">
+    <!-- link para sweetalert -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.2/dist/sweetalert2.min.css">
 </head>
 
 <body>
@@ -67,10 +69,12 @@
                         <h3>{{ tarea.titulo }}</h3>
                         <span>{{ tarea.hora }}</span>
                         <p class="descripcion">{{ tarea.descripcion }}</p>
-                        <input type="checkbox" class="custom-checkbox" {% if tarea.completada %}checked{% endif %}>
+                        <!-- añadir onclick para cambiar el estado de la tarea en la base de datos -->
+                        <input type="checkbox" class="custom-checkbox" {% if tarea.completada %}checked{% endif %}> 
 
                         <div class="acciones">
-                            <a href="{{ url_for('eliminar_actividad', id=tarea.id) }}" class="btn-eliminar">Eliminar</a>
+                            <a href="javascript:void(0)" class="btn-eliminar" onclick="confirmarEliminacion('{{ tarea.id }}')">Eliminar</a>
+
                             <a href="{{ url_for('editar_actividad', id=tarea.id) }}" class="btn-actualizar">Actualizar</a>
                         </div>
                     </div>
@@ -88,7 +92,8 @@
         let rachajs = 0; // Inicializar racha
         let color_racha = 'default'; // Inicializar color de racha
 
-        const checkboxes = document.querySelectorAll('.tarea-checkbox');
+        // const checkboxes = document.querySelectorAll('.tarea-checkbox');
+        const checkboxes = document.querySelectorAll('.custom-checkbox');
 
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', function () {
@@ -165,7 +170,28 @@
         actualizarFogata(rachajs);
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
+    <!-- link para sweetalert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.2/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+    function confirmarEliminacion(id) {
+        id = parseInt(id);
+        Swal.fire({
+            title: 'Confirmar eliminación',
+            text: '¿Estás seguro de que deseas eliminar la tarea?',
+            icon: 'warning',
+            showCancelButton: true,  // Muestra el botón "Cancelar"
+            confirmButtonText: 'Eliminar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true  // Cambia el orden de los botones (primero el "Cancelar")
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/eliminar_actividad/" + id;
+            }
+        });
+    }
+    </script>
 </body>
 
 </html>

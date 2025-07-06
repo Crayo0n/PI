@@ -48,7 +48,7 @@
 
         <div class="crear-actividad">
             <form method="POST" action="{{ url_for('editar_actividad', id=actividad.id) }}">
-                <img id="imagen-actividad" src="{{ url_for('static', filename=actividad.imagen) }}"
+                <img id="imagen-actividad" src="../{{ actividad.imagen }}"
                     alt="Imagen de actividad" class="imagen-actividad">
 
                 <input type="text" id="nombre" name="nombre" class="actividad-titulo" placeholder="Tarea"
