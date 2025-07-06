@@ -3,6 +3,8 @@ from db import db
 from sqlalchemy.exc import SQLAlchemyError 
 from flask import jsonify
 from datetime import datetime
+import tablas.actividades
+
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
@@ -83,6 +85,7 @@ def registrarse():
         return render_template('registrarse.html', errores=errores, error=error)
 
     return render_template('registrarse.html', errores=errores)
+
 @app.route('/nueva_actividad',methods=['GET'])
 def NvActividad():
     racha = 0
@@ -143,11 +146,82 @@ def PostNvActividad():
             
     return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores = errores)
 
-@app.route('/editar_actividad')
-def AcActividad():
-    return render_template('AcActividad.html', racha=racha, color_racha=color_racha)
+# Ruta para editar actividad
+@app.route('/editar_actividad/<int:id>', methods=['GET', 'POST'])
+def editar_actividad(id):
+    errores = {}
+    actividad = db.session.get(actividades, id)
 
+    if not actividad:
+        flash('Actividad no encontrada', 'error')
+        return redirect(url_for('actividades'))
+
+    if request.method == 'POST':
+        titulo = request.form.get('nombre', '').strip()
+        fecha = request.form.get('fecha', '').strip()
+        repeticion = request.form.get('repetir', '').strip()
+        hora = request.form.get('hora', '').strip()
+        prioridad = request.form.get('prioridad', '').strip()
+        descripcion = request.form.get('descripcion', '').strip()
+        rutaImagen = request.form.get('rutaImagen', '').strip()
+
+        if not titulo or not fecha or not repeticion or not hora or not prioridad or not descripcion or not rutaImagen:
+            errores['emptyValues'] = "Hay campos vacíos"
+        else:
+            try:
+
+                fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
+                hora_obj = datetime.strptime(hora, '%H:%M').time()
+            except ValueError:
+                errores['fechaError'] = 'Formato de fecha incorrecto. Use YYYY-MM-DD.'
+                return render_template('editar_actividad.html', actividad=actividad, errores=errores)
+
+            try:
+                actividad.titulo = titulo
+                actividad.fecha = fecha_obj
+                actividad.repetir = repeticion
+                actividad.hora = hora_obj
+                actividad.prioridad = prioridad
+                actividad.descripcion = descripcion
+                actividad.imagen = rutaImagen
+
+                db.session.commit()
+                flash('Actividad actualizada correctamente')
+                return redirect(url_for('actividades'))
+
+            except SQLAlchemyError as e:
+                errores['dbError'] = 'Error al actualizar la actividad en la base de datos'
+                db.session.rollback() 
+            except Exception as e:
+                errores['dbError'] = 'Error al actualizar la actividad'
+                
+        return render_template('editar_actividad.html', actividad=actividad, errores=errores)
+
+    return render_template('editar_actividad.html', actividad=actividad, errores=errores)
+
+# Ruta para eliminar actividad
+@app.route('/eliminar_actividad/<int:id>', methods=['GET', 'POST'])
+def eliminar_actividad(id):
+    actividad = db.session.get(tablas.Actividades, id)
     
+    if not actividad:
+        flash('Actividad no encontrada', 'error')
+        return redirect(url_for('actividades'))
+
+    try:
+        db.session.delete(actividad)
+        db.session.commit()
+        flash('Actividad eliminada correctamente')
+        return redirect(url_for('actividades'))
+
+    except SQLAlchemyError as e:
+        flash('Error al eliminar la actividad', 'error')
+        db.session.rollback() 
+    except Exception as e:
+        flash('Error al eliminar la actividad', 'error')
+
+    return redirect(url_for('actividades'))
+
 # Ruta para manejar las actividades
 @app.route('/actividades', methods=['GET', 'POST'])
 def actividades():

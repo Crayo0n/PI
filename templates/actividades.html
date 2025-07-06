@@ -5,22 +5,19 @@
     <meta charset="UTF-8">
     <title>Actividades - Priority Pulse</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/actividades.css') }}">
-    
 </head>
 
 <body>
-    <!--Errores-->
     {% if errores and errores.actividades_error %}
-            <script>
-                Swal.fire({
-                    title: 'Mensaje',
-                    text: '{{ errores.actividades_error }}',  
-                    icon: 'error',            
-                    confirmButtonText: 'Aceptar'
-                });
-            </script>
+        <script>
+            Swal.fire({
+                title: 'Mensaje',
+                text: '{{ errores.actividades_error }}',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        </script>
     {% endif %}
-    <!--Errores-->
     <nav class="navbar">
         <div class="box">
             <div class="fogata-container">
@@ -51,59 +48,42 @@
         <a href="{{ url_for('login') }}">Cerrar Sesión</a>
     </nav>
 
-    <!-- <div class="divImportantes">
-        <section class="importantes">
-            <div class="importantes-header">
-                <h2>Actividades Importantes del Día</h2>
-                <a href="{{ url_for('AcActividad') }}" class="editar-btn">Editar</a>
-            </div>
-            <div class="tarjetas">
-            {% for tarea in tareas_importantes %}
-                <div class="tarjeta {% if tarea.completada %}completada{% endif %}">
-                    <img src="{{ url_for('static', filename=tarea.imagen) }}" class="icono-tarea">
-                    <h3>{{ tarea.titulo }}</h3>
-                    <span>{{ tarea.hora }}</span>
-                    <p class="descripcion">{{ tarea.descripcion }}</p>
-                    <form method="POST" style="display: inline;">
-                        <input type="checkbox" class="tarea-checkbox" data-idx="{{ loop.index0 }}" {% if tarea.completada %}checked{% endif %}>
-                    </form>
-                </div>
-            {% endfor %}
-            </div>
-        </section>
-    </div> -->
-
     {% if errores and errores.no_actividades %}
         <div class="calendario-header">
             <h2>No hay actividades para mostrar</h2>
             <a href="{{ url_for('NvActividad') }}" class="crear-actividad-btn"><h2>Crear mi nueva actividad</h2></a>
         </div>
-s
-    {% elif tareas_importantes|length > 0 %}    
+    {% elif tareas_importantes|length > 0 %}
         <div class="Tareas_Dia">
-        <section class="calendario">
-            <div class="calendario-header">
-                <h2>Tareas por completar</h2>
-                <a href="{{ url_for('NvActividad') }}" class="agregar-btn">Agregar</a>
-            </div>
-            <div class="tarjetas calendario-grid">
-                {% for tarea in tareas_importantes %}
-                <div class="tarjeta {% if tarea.completada %}completada{% endif %}">
-                    <img src="{{ tarea.imagen }}" class="icono-tarea">
-                    <h3>{{ tarea.titulo }}</h3>
-                    <span>{{ tarea.hora }}</span>
-                    <p class="descripcion">{{ tarea.descripcion }}</p>
-                    <input type="checkbox" class="custom-checkbox" {% if tarea.completada %}checked{% endif %}>
+            <section class="calendario">
+                <div class="calendario-header">
+                    <h2>Tareas por completar</h2>
+                    <a href="{{ url_for('NvActividad') }}" class="agregar-btn">Agregar</a>
                 </div>
-                {% endfor %}
-            </div>
-        </section>
+                <div class="tarjetas calendario-grid">
+                    {% for tarea in tareas_importantes %}
+                    <div class="tarjeta {% if tarea.completada %}completada{% endif %}">
+                        <img src="{{ tarea.imagen }}" class="icono-tarea">
+                        <h3>{{ tarea.titulo }}</h3>
+                        <span>{{ tarea.hora }}</span>
+                        <p class="descripcion">{{ tarea.descripcion }}</p>
+                        <input type="checkbox" class="custom-checkbox" {% if tarea.completada %}checked{% endif %}>
+
+                        <div class="acciones">
+                            <a href="{{ url_for('eliminar_actividad', id=tarea.id) }}" class="btn-eliminar">Eliminar</a>
+                            <a href="{{ url_for('editar_actividad', id=tarea.id) }}" class="btn-actualizar">Actualizar</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
         </div>
     {% else %}
         <div class="calendario-header">
             <h2>Hay un pequeño inconveniente para mostrar las tareas</h2>
         </div>
     {% endif %}
+
     <script>
         let rachajs = 0; // Inicializar racha
         let color_racha = 'default'; // Inicializar color de racha
@@ -130,7 +110,7 @@ s
                     });
             });
         });
-        
+
         function actualizarFogata(racha) {
             const fogata = document.getElementById('fogata');
             // Calcular fase (cada 10 días de racha es una fase)
@@ -144,13 +124,11 @@ s
                 crearChispas(15 + fase);
             }
         }
-        
+
         function crearChispas(cantidad) {
             const fogata = document.getElementById('fogata');
             const chispasContainer = fogata.querySelector('.chispas');
             if (!chispasContainer) return;
-            
-            chispasContainer.innerHTML = '';
             
             const racha = parseInt(document.querySelector('#dias-racha').innerText);
             const fase = Math.min(Math.floor(racha / 10), 19);
@@ -169,32 +147,11 @@ s
                         (Math.random() > 0.5 ? '#ff8a65' : '#ff5722') : 
                         (Math.random() > 0.5 ? '#ffecb3' : '#ffcc80'));
                 
-                spark.style.cssText = `
-                    position: absolute;
-                    width: ${2 + Math.random() * 3}px;
-                    height: ${2 + Math.random() * 3}px;
-                    background: ${color};
-                    border-radius: 50%;
-                    bottom: 40%;
-                    left: 50%;
-                    opacity: 0;
-                    box-shadow: 0 0 5px ${fase >= 15 ? '#00bcd4' : (fase >= 10 ? '#ff3d00' : '#ff9800')};
-                `;
-                
+                spark.style.cssText = `position: absolute; width: ${2 + Math.random() * 3}px; height: ${2 + Math.random() * 3}px; background: ${color}; border-radius: 50%; bottom: 40%; left: 50%; opacity: 0; box-shadow: 0 0 5px ${fase >= 15 ? '#00bcd4' : (fase >= 10 ? '#ff3d00' : '#ff9800')};`;
+
                 // Animación de la chispa
-                const keyframes = `
-                    @keyframes spark-fly-${i} {
-                        0% { 
-                            transform: translate(0, 0); 
-                            opacity: 1;
-                        }
-                        100% { 
-                            transform: translate(${posX}px, -${200 + Math.random() * 100}px); 
-                            opacity: 0;
-                        }
-                    }
-                `;
-                
+                const keyframes = `@keyframes spark-fly-${i} { 0% { transform: translate(0, 0); opacity: 1; } 100% { transform: translate(${posX}px, -${200 + Math.random() * 100}px); opacity: 0; } }`;
+
                 const style = document.createElement('style');
                 style.textContent = keyframes;
                 document.head.appendChild(style);
@@ -203,10 +160,12 @@ s
                 chispasContainer.appendChild(spark);
             }
         }
-        
+
         // Inicializar fogata con la racha actual
         actualizarFogata(rachajs);
     </script>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
+
 </html>
