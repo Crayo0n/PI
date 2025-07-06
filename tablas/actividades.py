@@ -11,6 +11,7 @@ class Actividades(db.Model):
     prioridad = db.Column(db.String(10), nullable=True)  # alta, media, baja
     descripcion = db.Column(db.Text, nullable=True)
     imagen = db.Column(db.String(200), nullable=True)  # ruta a la imagen
-    completada = db.Column(db.Boolean, default=False, nullable=False) 
+    completada = db.Column(db.Boolean, default=False, nullable=False)
+    estado = db.Column(db.Integer, default=1, nullable=False)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     usuario = db.relationship('Usuarios', backref='actividades')

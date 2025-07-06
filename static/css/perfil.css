@@ -106,6 +106,9 @@ a {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-bottom: 10px;
+    width: 100%;
+    
 }
 
 .editar-perfil button:hover {

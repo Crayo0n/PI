@@ -3,6 +3,10 @@ from db import db
 from sqlalchemy.exc import SQLAlchemyError 
 from flask import jsonify
 from datetime import datetime
+import tablas
+from tablas.actividades import Actividades
+from tablas.usuarios import Usuarios
+
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
@@ -16,7 +20,7 @@ tareas_importantes = [
 racha = 0
 color_racha = 'default'  # Racha normal al principio
 
-import tablas
+
 
 
 # Configuración de la base de datos
@@ -27,6 +31,8 @@ db.init_app(app)
 def create_tables():
     db.create_all()
 # Rutas de la aplicación
+
+
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -83,6 +89,7 @@ def registrarse():
         return render_template('registrarse.html', errores=errores, error=error)
 
     return render_template('registrarse.html', errores=errores)
+
 @app.route('/nueva_actividad',methods=['GET'])
 def NvActividad():
     racha = 0
@@ -143,11 +150,82 @@ def PostNvActividad():
             
     return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores = errores)
 
-@app.route('/editar_actividad')
-def AcActividad():
-    return render_template('AcActividad.html', racha=racha, color_racha=color_racha)
+# Ruta para editar actividad
+@app.route('/editar_actividad/<int:id>', methods=['GET', 'POST'])
+def editar_actividad(id):
+    errores = {}
+    actividad = Actividades.query.get_or_404(id)
 
+    if not actividad:
+        flash('Actividad no encontrada', 'error')
+        return redirect(url_for('actividades'))
+
+    if request.method == 'POST':
+        titulo = request.form.get('nombre', '').strip()
+        fecha = request.form.get('fecha', '').strip()
+        repeticion = request.form.get('repetir', '').strip()
+        hora = request.form.get('hora', '').strip()
+        prioridad = request.form.get('prioridad', '').strip()
+        descripcion = request.form.get('descripcion', '').strip()
+        rutaImagen = request.form.get('rutaImagen', '').strip()
+
+        if not titulo or not fecha or not repeticion or not hora or not prioridad or not descripcion or not rutaImagen:
+            errores['emptyValues'] = "Hay campos vacíos"
+        else:
+            try:
+
+                fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
+                hora_obj = datetime.strptime(hora, '%H:%M').time()
+            except ValueError:
+                errores['fechaError'] = 'Formato de fecha incorrecto. Use YYYY-MM-DD.'
+                return render_template('editar_actividad.html', actividad=actividad, errores=errores)
+
+            try:
+                actividad.titulo = titulo
+                actividad.fecha = fecha_obj
+                actividad.repetir = repeticion
+                actividad.hora = hora_obj
+                actividad.prioridad = prioridad
+                actividad.descripcion = descripcion
+                actividad.imagen = rutaImagen
+
+                db.session.commit()
+                flash('Actividad actualizada correctamente')
+                return redirect(url_for('actividades'))
+
+            except SQLAlchemyError as e:
+                errores['dbError'] = 'Error al actualizar la actividad en la base de datos'
+                db.session.rollback() 
+            except Exception as e:
+                errores['dbError'] = 'Error al actualizar la actividad'
+                
+        return render_template('editar_actividad.html', actividad=actividad, errores=errores)
+
+    return render_template('AcActividad.html', actividad=actividad, errores=errores)
+
+# Ruta para eliminar actividad
+@app.route('/eliminar_actividad/<int:id>')
+def eliminar_actividad(id):
+    actividad = Actividades.query.get_or_404(id)
     
+    if not actividad:
+        flash('Actividad no encontrada', 'error')
+        return redirect(url_for('actividades'))
+
+    try:
+        actividad.estado = 0
+        db.session.commit()
+        flash('Actividad eliminada correctamente')
+        return redirect(url_for('actividades'))
+
+    except SQLAlchemyError as e:
+        flash('Error al eliminar la actividad', 'error')
+        db.session.rollback() 
+    except Exception as e:
+        flash('Error al eliminar la actividad', 'error')
+
+    return redirect(url_for('actividades'))
+
 # Ruta para manejar las actividades
 @app.route('/actividades', methods=['GET', 'POST'])
 def actividades():
@@ -162,7 +240,7 @@ def actividades():
         return redirect(url_for('login'))
     try:
         # Obtener actividades del usuario
-        actividades_usuario = tablas.Actividades.query.filter_by(usuario_id=usuario_id).all()
+        actividades_usuario = tablas.Actividades.query.filter_by(usuario_id=usuario_id, estado=1).all()
         print(f"Actividades del usuario {usuario_id}: {actividades_usuario}")
 
         if not actividades_usuario:
@@ -226,6 +304,54 @@ def actualizar_tarea():
         color_racha = 'default'
 
     return jsonify({'racha': racha, 'color_racha': color_racha})
+
+@app.route('/perfil')
+def perfil():
+    usuario = Usuarios.query.get_or_404(session['usuario_id'])
+    return render_template('perfil.html', usuario=usuario)
+
+@app.route('/actualizar_perfil', methods=['POST'])
+def actualizar_perfil():
+    usuario = Usuarios.query.get_or_404(session['usuario_id'])
+    nombre = request.form.get('nombre', '').strip()
+    apellido = request.form.get('apellido', '').strip()
+    contrasena = request.form.get('contrasena', '').strip()
+    confirmar_contrasena = request.form.get('confirmar_contrasena', '').strip()
+    email = request.form.get('email', '').strip()
+
+    if contrasena != confirmar_contrasena:
+        flash('Las contraseñas no coinciden', 'error')
+
+    # Validar y actualizar los datos del usuario
+    if nombre and apellido and contrasena and email:
+        usuario.nombre = nombre
+        usuario.apellido = apellido
+        usuario.contrasena = contrasena
+        usuario.email = email
+        db.session.commit()
+        flash('Perfil actualizado con éxito')
+    else:
+        flash('Por favor, completa todos los campos')
+
+    return redirect(url_for('perfil'))
+
+@app.route('/eliminar_cuenta')
+def eliminar_cuenta():
+    usuario = Usuarios.query.get_or_404(session['usuario_id'])
+    
+    try:
+        db.session.delete(usuario)
+        Actividades.query.filter_by(usuario_id=usuario.id).delete()
+        db.session.commit()
+        flash('Cuenta eliminada con éxito', 'success')
+        session.pop('usuario_id', None)  # Eliminar la sesión del usuario
+        return redirect(url_for('login'))
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        flash('Error al eliminar la cuenta', 'error')
+        print(f"Error al eliminar la cuenta: {e}")
+    
+    return redirect(url_for('perfil'))
 
 
 if __name__ == '__main__':
