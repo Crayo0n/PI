@@ -3,6 +3,7 @@ from db import db
 from sqlalchemy.exc import SQLAlchemyError 
 from flask import jsonify
 from datetime import datetime
+import tablas
 from tablas.actividades import Actividades
 from tablas.usuarios import Usuarios
 
@@ -19,7 +20,7 @@ tareas_importantes = [
 racha = 0
 color_racha = 'default'  # Racha normal al principio
 
-import tablas
+
 
 
 # Configuración de la base de datos
@@ -30,6 +31,8 @@ db.init_app(app)
 def create_tables():
     db.create_all()
 # Rutas de la aplicación
+
+
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -301,6 +304,54 @@ def actualizar_tarea():
         color_racha = 'default'
 
     return jsonify({'racha': racha, 'color_racha': color_racha})
+
+@app.route('/perfil')
+def perfil():
+    usuario = Usuarios.query.get_or_404(session['usuario_id'])
+    return render_template('perfil.html', usuario=usuario)
+
+@app.route('/actualizar_perfil', methods=['POST'])
+def actualizar_perfil():
+    usuario = Usuarios.query.get_or_404(session['usuario_id'])
+    nombre = request.form.get('nombre', '').strip()
+    apellido = request.form.get('apellido', '').strip()
+    contrasena = request.form.get('contrasena', '').strip()
+    confirmar_contrasena = request.form.get('confirmar_contrasena', '').strip()
+    email = request.form.get('email', '').strip()
+
+    if contrasena != confirmar_contrasena:
+        flash('Las contraseñas no coinciden', 'error')
+
+    # Validar y actualizar los datos del usuario
+    if nombre and apellido and contrasena and email:
+        usuario.nombre = nombre
+        usuario.apellido = apellido
+        usuario.contrasena = contrasena
+        usuario.email = email
+        db.session.commit()
+        flash('Perfil actualizado con éxito')
+    else:
+        flash('Por favor, completa todos los campos')
+
+    return redirect(url_for('perfil'))
+
+@app.route('/eliminar_cuenta')
+def eliminar_cuenta():
+    usuario = Usuarios.query.get_or_404(session['usuario_id'])
+    
+    try:
+        db.session.delete(usuario)
+        Actividades.query.filter_by(usuario_id=usuario.id).delete()
+        db.session.commit()
+        flash('Cuenta eliminada con éxito', 'success')
+        session.pop('usuario_id', None)  # Eliminar la sesión del usuario
+        return redirect(url_for('login'))
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        flash('Error al eliminar la cuenta', 'error')
+        print(f"Error al eliminar la cuenta: {e}")
+    
+    return redirect(url_for('perfil'))
 
 
 if __name__ == '__main__':
