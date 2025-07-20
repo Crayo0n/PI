@@ -33,7 +33,7 @@ def create_tables():
 # Rutas de la aplicación
 
 
-
+#Ya esta en login.py
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -49,7 +49,7 @@ def login():
             return render_template('login.html', error=error)
     return render_template('login.html')
 
-
+#Ya esta en registrarUsuario
 @app.route('/registrarse', methods=['GET', 'POST'])
 def registrarse():
     errores = {}
@@ -90,6 +90,7 @@ def registrarse():
 
     return render_template('registrarse.html', errores=errores)
 
+#Ya esta en registrarActividad
 @app.route('/nueva_actividad',methods=['GET'])
 def NvActividad():
     racha = 0
@@ -151,6 +152,7 @@ def PostNvActividad():
     return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores = errores)
 
 # Ruta para editar actividad
+#Ya esta en editar actividad
 @app.route('/editar_actividad/<int:id>', methods=['GET', 'POST'])
 def editar_actividad(id):
     errores = {}
@@ -204,6 +206,7 @@ def editar_actividad(id):
     return render_template('AcActividad.html', actividad=actividad, errores=errores)
 
 # Ruta para eliminar actividad
+#Ya esta en eliminar actividad
 @app.route('/eliminar_actividad/<int:id>')
 def eliminar_actividad(id):
     actividad = Actividades.query.get_or_404(id)
@@ -227,6 +230,7 @@ def eliminar_actividad(id):
     return redirect(url_for('actividades'))
 
 # Ruta para manejar las actividades
+#Ya esta en listaActividades
 @app.route('/actividades', methods=['GET', 'POST'])
 def actividades():
     global racha, color_racha
@@ -305,11 +309,12 @@ def actualizar_tarea():
 
     return jsonify({'racha': racha, 'color_racha': color_racha})
 
+#Ya esta en actualizar perfil
 @app.route('/perfil')
 def perfil():
     usuario = Usuarios.query.get_or_404(session['usuario_id'])
     return render_template('perfil.html', usuario=usuario)
-
+#Ya esta en actualizar perfil
 @app.route('/actualizar_perfil', methods=['POST'])
 def actualizar_perfil():
     usuario = Usuarios.query.get_or_404(session['usuario_id'])
@@ -335,6 +340,7 @@ def actualizar_perfil():
 
     return redirect(url_for('perfil'))
 
+#Ya esta en eliminarUsuario
 @app.route('/eliminar_cuenta')
 def eliminar_cuenta():
     usuario = Usuarios.query.get_or_404(session['usuario_id'])
