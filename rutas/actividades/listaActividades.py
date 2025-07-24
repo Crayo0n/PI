@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template, request, redirect, session, url_for, flash
 import tablas
 from sqlalchemy.exc import SQLAlchemyError 
+from decoradores import loginRequired
 
 listaActividades_bp = Blueprint('listaActividades', __name__)
 
-    # Ruta para manejar las actividades
+# Ruta para manejar las actividades
+@loginRequired
 @listaActividades_bp.route('/actividades', methods=['GET', 'POST'])
 def actividades():
     global racha, color_racha

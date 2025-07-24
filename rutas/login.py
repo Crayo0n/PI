@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, session, url_for, flash
 import tablas
+from decoradores import loginRequired
 
 
 login_bp = Blueprint('login', __name__)
@@ -25,6 +26,7 @@ def login():
     
 
 #Cierre de sesion
+@loginRequired
 @login_bp.route("cerrarSesion")
 def cerrarSesion():
     print("Entrando a cerrar sesión ------------------")
