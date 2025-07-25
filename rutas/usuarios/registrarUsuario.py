@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash, session
 from db import db
-import tablas 
-
+import tablas.usuarios as usuarios
+from utilities import encriptarContrasena
+from sqlalchemy.exc import IntegrityError, OperationalError, SQLAlchemyError
 
 registrarUsuario_bp = Blueprint('registrarUsuario', __name__)
 
@@ -46,9 +47,41 @@ def registrarse():
 
     if errores:
         print(f'Hay error en: {errores}')
-    else:
-        print('Agregando usuario')
-    
-    
+        return jsonify(errores), 400 
+    try:
+        # Verificar si ya existe un usuario con el mismo correo
+        usuario_existente = usuarios.query.filter_by(email=email).first()
+        print(f'Usurio con el correo ingresado: {usuario_existente}')
+        
+        if usuario_existente:
+            errores['userExist'] = 'Ya existe un usuario con ese correo'
+            return render_template('registrarse.html', errores=errores)
+        
+        
+        nuevo_usuario = usuarios(
+            nombre=nombre,
+            apellido=apellido,
+            email=email,
+            contrasena=encriptarContrasena.encriptar_contrasena(password),  # Usar hash para la contraseña
+        )
 
-    return render_template('registrarse.html', errores=errores)
+        # Agregar a la sesión y confirmar la transacción
+        db.session.add(nuevo_usuario)
+        db.session.commit()
+
+        print('Usuario agregado exitosamente.')
+        flash('Usuario agregado exitosamente.')
+        return render_template("login.html")
+
+    except IntegrityError as e:
+        db.session.rollback()  
+        print(f'Error de integridad: {str(e.orig)}')
+        errores['userExist'] = 'Ya existe un usuario con ese correo'
+        return jsonify(errores), 400  # Manejar errores de duplicación de correo
+    
+    except Exception as e:
+        db.session.rollback()  # Si ocurre cualquier otro error, revertir cambios
+        print(f'Error durante la inserción: {str(e)}')
+        errores['dbError'] = 'Error con la base de datos'
+        return jsonify(errores), 500
+    
