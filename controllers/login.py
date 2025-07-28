@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, session, url_for, flash
 import tablas
-from decoradores import loginRequired
+from decoradores.loginRequired import login_required
 from utilities import encriptarContrasena
 
 login_bp = Blueprint('login', __name__)
@@ -37,8 +37,8 @@ def login():
     
 
 #Cierre de sesion
-@loginRequired
-@login_bp.route("cerrarSesion")
+@login_bp.route("/cerrarSesion")
+@login_required
 def cerrarSesion():
     print("Entrando a cerrar sesión ------------------")
     try:
@@ -49,4 +49,4 @@ def cerrarSesion():
         errores = {}
         errores["sessionError"] = "Error al cerrar sesión"
         print(f"Error al cerrar sesión: {str(e)}")
-        return render_template("login.html", err=errores)
+        return render_template("login.html", errores=errores)

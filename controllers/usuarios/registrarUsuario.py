@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, session
 from db import db
 import tablas
 from utilities import encriptarContrasena
-from models import usuarios
+from models.usuarios import *
 
 registrarUsuario_bp = Blueprint('registrarUsuario', __name__)
 
@@ -28,7 +28,7 @@ def registrarse():
     password = request.form.get('password', '')
     confirm_password = request.form.get('confirm_password', '')
     
-    print(f'Datos obtenidos nombre {nombre}, apellido: {apellido}, email{email}, password: {password}, confpass: {confirm_password}')
+    print(f'Datos obtenidos nombre {nombre}, apellido: {apellido}, email: {email}, password: {password}, confpass: {confirm_password}')
     
     match (nombre, apellido, email, password, confirm_password):
         case ('', _, _, _, _):
@@ -55,15 +55,16 @@ def registrarse():
                 return render_template('registrarse.html', errores=errores)
             
             
-            nuevoUsuario = usuarios(
+            nuevoUsuario = tablas.Usuarios(
                 nombre=nombre,
                 apellido=apellido,
                 email=email,
                 contrasena=encriptarContrasena.encriptar_contrasena(password),  # Usar hash para la contraseña
             )
 
+            print(f'Datos a ingresar: user: {nuevoUsuario}')
             # Agregar a la sesión y confirmar la transacción
-            errores = usuarios.agregarUsuario(nuevoUsuario)
+            errores = agregarUsuario(nuevoUsuario)
             
             if not errores:
                 flash('Usuario agregado correctamente')

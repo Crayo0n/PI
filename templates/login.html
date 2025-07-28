@@ -22,7 +22,7 @@
             {% endif %}
         {% endwith %}
         
-        <form method="POST" action="{{ url_for('login') }}">
+        <form method="POST" action="{{ url_for('login.login') }}">
             <input type="email" name="email" placeholder="Email" required>
             <div class="password-container">
                 <input type="password" name="password" placeholder="Contraseña" id="pwd" required>
@@ -30,7 +30,7 @@
             </div>
             <button type="submit">Iniciar Sesión</button>
         </form>
-        <p class="register-link">¿No tienes cuenta? <a href="{{ url_for('registrarse') }}">Regístrate</a></p>
+        <p class="register-link">¿No tienes cuenta? <a href="{{ url_for('registrarUsuario.mostrarRegistrarse') }}">Regístrate</a></p>
     </div>
 </body>
 </html>

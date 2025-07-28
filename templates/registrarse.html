@@ -13,7 +13,7 @@
             <p style="color: red;">{{ error }}</p>
         {% endif %}
 
-        <form method="POST" action="{{ url_for('registrarse') }}">
+        <form method="POST" action="{{ url_for('registrarUsuario.registrarse') }}">
             <div class="row">
                 <input type="text" name="Nombre" placeholder="Nombre" >
                 {% if errores and errores.Nombre %}
@@ -37,7 +37,7 @@
             </div>
             <button type="submit">Registrarte</button>
         </form>
-        <p class="login-link">¿Ya tienes una cuenta? <a href="{{ url_for('login') }}">Inicia Sesión</a></p>
+        <p class="login-link">¿Ya tienes una cuenta? <a href="{{ url_for('login.home') }}">Inicia Sesión</a></p>
     </div>
 </body>
 </html>
