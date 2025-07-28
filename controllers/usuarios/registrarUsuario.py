@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, jsonif
 from db import db
 import tablas.usuarios as usuarios
 from utilities import encriptarContrasena
-from sqlalchemy.exc import IntegrityError, OperationalError, SQLAlchemyError
+from models import usuarios
 
 registrarUsuario_bp = Blueprint('registrarUsuario', __name__)
 
@@ -13,14 +13,14 @@ def mostrarRegistrarse():
     errores = {}
     if session.get('usuario_id'):
         errores['userError'] = 'El usuario ya tiene una sesión abierta.'
+        return render_template('actividades.html', usuario_id = session.get('usuario_id'))
         
-    return render_template('registrarse.html', errores=errores)
+    return render_template('actividades.html', errores=errores)
 
 @registrarUsuario_bp.route('/registrarse', methods=['POST'])
 def registrarse():
     print('Intentando agregar usuario -----------------------------')
     errores = {}
-    error = None
 
     nombre = request.form.get('Nombre', '').strip()
     apellido = request.form.get('Apellido', '').strip()
@@ -58,7 +58,7 @@ def registrarse():
             return render_template('registrarse.html', errores=errores)
         
         
-        nuevo_usuario = usuarios(
+        nuevoUsuario = usuarios(
             nombre=nombre,
             apellido=apellido,
             email=email,
@@ -66,18 +66,7 @@ def registrarse():
         )
 
         # Agregar a la sesión y confirmar la transacción
-        db.session.add(nuevo_usuario)
-        db.session.commit()
-
-        print('Usuario agregado exitosamente.')
-        flash('Usuario agregado exitosamente.')
-        return render_template("login.html")
-
-    except IntegrityError as e:
-        db.session.rollback()  
-        print(f'Error de integridad: {str(e.orig)}')
-        errores['userExist'] = 'Ya existe un usuario con ese correo'
-        return jsonify(errores), 400  # Manejar errores de duplicación de correo
+        errores = usuarios.agregarUsuario(nuevoUsuario)
     
     except Exception as e:
         db.session.rollback()  # Si ocurre cualquier otro error, revertir cambios
