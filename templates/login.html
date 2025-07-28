@@ -11,8 +11,13 @@
         <img src="{{ url_for('static', filename='/img/logo.png') }}" alt="Priority Pulse Logo" class="logo">
         <h2>Haz de tus tareas una prioridad</h2>
         <h3>Login</h3>
-        {% if error %}
-            <p style="color: red; font-weight: bold;">{{ error }}</p>
+        {% if errores and errores.emptyValues %}
+            <p style="color: red; font-weight: bold;">{{ errores.emptyValues }}</p>    
+        {% elif errores and errores.userError %}
+            <p style="color: red; font-weight: bold;">{{ errores.userError }}</p>
+        {% elif errores and errores.passwordError %}
+            <p style="color: red; font-weight: bold;">{{ errores.passwordError }}</p>
+
         {% endif %}
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -23,9 +28,9 @@
         {% endwith %}
         
         <form method="POST" action="{{ url_for('login.login') }}">
-            <input type="email" name="email" placeholder="Email" required>
+            <input type="email" name="email" placeholder="Email" >
             <div class="password-container">
-                <input type="password" name="password" placeholder="Contraseña" id="pwd" required>
+                <input type="password" name="password" placeholder="Contraseña" id="pwd" >
                 <input type="checkbox" class="show-password" onclick="pwd.type=this.checked ? 'text': 'password'">
             </div>
             <button type="submit">Iniciar Sesión</button>

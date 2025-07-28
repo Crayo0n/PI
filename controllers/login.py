@@ -33,6 +33,7 @@ def login():
         else:
             errores['userError'] = 'No hay usuario con ese correo registrado'
             
+    print(f'errores: {errores}')
     return render_template('login.html', errores=errores)
     
 
