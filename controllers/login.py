@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, session, url_for, flash
 import tablas
 from decoradores import loginRequired
-
+from utilities import encriptarContrasena
 
 login_bp = Blueprint('login', __name__)
 
@@ -13,16 +13,27 @@ def home():
 #Comprueba el usuario
 @login_bp.route("/login", methods=["POST"])
 def login():
+    print('Iniciando sesion ----------------')
+    errores = {}
     email = request.form.get('email',"")
     password = request.form.get('password','')
-    usuario = tablas.Usuarios.query.filter_by(email=email).first()
-    if usuario and usuario.contrasena == password:
-        session['usuario_id'] = usuario.id 
-        return redirect(url_for('actividades')) ###3## Cambiar URL
-    
+    print(f'Datos obtenidos: {email} y {password}')
+    if not password or not email:
+        errores['emptyValues'] = 'Ingrese todos los campos'
     else:
-        error = "Credenciales incorrectas"
-        return render_template('login.html', error=error)
+        usuario = tablas.Usuarios.query.filter_by(email=email).first()
+        if usuario:
+            resultado = encriptarContrasena.verificar_contrasena(password,usuario.contrasena)
+            if resultado:
+                print('Ingresando a lista de actividades ----------------------')
+                session['usuario_id'] = usuario.id 
+                return render_template('actividades.html', errores = errores) ###3## Cambiar URL
+            else:
+                errores['passwordError'] = 'La contraseña es incorrecta'
+        else:
+            errores['userError'] = 'No hay usuario con ese correo registrado'
+            
+    return render_template('login.html', errores=errores)
     
 
 #Cierre de sesion

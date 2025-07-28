@@ -4,9 +4,9 @@ from flask import Flask
 from db import db
 from config import Config
 #Rutas
-from rutas.login import login_bp                #inicio de sesión
-from rutas.usuarios import usuarios_bps         #rutas de usuarios
-from rutas.actividades import actividades_bps   #rutas de actividades
+from controllers.login import login_bp                #inicio de sesión
+from controllers.usuarios import usuarios_bps         #controllers de usuarios
+from controllers.actividades import actividades_bps   #rutas de actividades
 
 
 app = Flask(__name__)

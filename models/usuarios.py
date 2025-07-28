@@ -19,5 +19,4 @@ def agregarUsuario(nuevoUsuario):
         print(f'Error durante la inserción: {str(e)}')
         errores['dbError'] = 'Error 2 durante la insersiond e usuarios'
 
-    finally:
-        return errores
+    return errores
