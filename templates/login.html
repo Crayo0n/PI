@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Login - Priority Pulse</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/login.css') }}">
 </head>
+
 <body>
 
     <div class="login-container">
@@ -12,31 +14,33 @@
         <h2>Haz de tus tareas una prioridad</h2>
         <h3>Login</h3>
         {% if errores and errores.emptyValues %}
-            <p style="color: red; font-weight: bold;">{{ errores.emptyValues }}</p>    
+        <p style="color: red; font-weight: bold;">{{ errores.emptyValues }}</p>
         {% elif errores and errores.userError %}
-            <p style="color: red; font-weight: bold;">{{ errores.userError }}</p>
+        <p style="color: red; font-weight: bold;">{{ errores.userError }}</p>
         {% elif errores and errores.passwordError %}
-            <p style="color: red; font-weight: bold;">{{ errores.passwordError }}</p>
+        <p style="color: red; font-weight: bold;">{{ errores.passwordError }}</p>
 
         {% endif %}
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                    {% for category, message in messages %}
-                        <p style="color: green; font-weight: bold;">{{ message }}</p> 
-                    {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <p style="color: green; font-weight: bold;">{{ message }}</p>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
-        
+
         <form method="POST" action="{{ url_for('login.login') }}">
-            <input type="email" name="email" placeholder="Email" >
+            <input type="email" name="email" placeholder="Email">
             <div class="password-container">
-                <input type="password" name="password" placeholder="Contraseña" id="pwd" >
+                <input type="password" name="password" placeholder="Contraseña" id="pwd">
                 <input type="checkbox" class="show-password" onclick="pwd.type=this.checked ? 'text': 'password'">
             </div>
             <button type="submit">Iniciar Sesión</button>
         </form>
-        <p class="register-link">¿No tienes cuenta? <a href="{{ url_for('registrarUsuario.mostrarRegistrarse') }}">Regístrate</a></p>
+        <p class="register-link">¿No tienes cuenta? <a
+                href="{{ url_for('registrarUsuario.mostrarRegistrarse') }}">Regístrate</a>
+        </p>
     </div>
 </body>
-</html>
 
+</html>

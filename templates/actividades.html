@@ -3,151 +3,153 @@
 {% block title %}Actividades - Priority Pulse{% endblock %}
 
 {% block content %}
-    {% if errores and errores.actividades_error %}
-    <script>
-        Swal.fire({
-            title: 'Mensaje',
-            text: '{{ errores.actividades_error }}',
-            icon: 'error',
-            confirmButtonText: 'Aceptar'
-        });
-    </script>
-    {% endif %}
-    
-
-    {% if errores and errores.no_actividades %}
-    <div class="calendario-header">
-        <h2>No hay actividades para mostrar</h2>
-        <a href="{{ url_for('registrarActividad.NvActividad') }}" class="crear-actividad-btn">
-            <h2>Crear mi nueva actividad</h2>
-        </a>
-    </div>
-    {% elif tareas_importantes|length > 0 %}
-    <div class="Tareas_Dia">
-        <section class="calendario">
-            <div class="calendario-header">
-                <h2>Tareas por completar</h2>
+{% if errores and errores.actividades_error %}
+<script>
+    Swal.fire({
+        title: 'Mensaje',
+        text: '{{ errores.actividades_error }}',
+        icon: 'error',
+        confirmButtonText: 'Aceptar'
+    });
+</script>
+{% endif %}
 
 
-                {% with mensajes = get_flashed_messages() %}
-                {% if mensajes %}
+{% if errores and errores.no_actividades %}
+<div class="calendario-header">
+    <h2>No hay actividades para mostrar</h2>
+    <a href="{{ url_for('registrarActividad.NvActividad') }}" class="crear-actividad-btn">
+        <h2>Crear mi nueva actividad</h2>
+    </a>
+</div>
+{% elif tareas_importantes|length > 0 %}
+<div class="Tareas_Dia">
+    <section class="calendario">
+        <div class="calendario-header">
+            <h2>Tareas por completar</h2>
+
+
+            {% with mensajes = get_flashed_messages() %}
+            {% if mensajes %}
+            <div class="flash-container">
                 {% for msj in mensajes %}
-                <h4>{{ msj }}</h4>
+                <div class="flash-message">{{ msj }}</div>
                 {% endfor %}
-                {% endif %}
-                {% endwith %}
-
-
-
-
-
-                <a href="{{ url_for('registrarActividad.NvActividad') }}" class="agregar-btn">Agregar</a>
             </div>
-            <div class="tarjetas calendario-grid">
-                {% for tarea in tareas_importantes %}
-                <div class="tarjeta">
-                    <img src="{{ tarea.imagen }}" class="icono-tarea">
-                    <h3>{{ tarea.titulo }}</h3>
-                    <span>{{ tarea.hora }}</span>
-                    <span>{{ tarea.prioridad }}</span>
-                    <p class="descripcion">{{ tarea.descripcion }}</p>
-
-                    <!-- Aquí corregimos los nombres -->
-                    <input type="checkbox" class="custom-checkbox" data-idx="{{ tarea.id }}" {% if tarea.completada
-                        %}checked{% endif %}>
-
-                    <div class="acciones">
-                        <a href="javascript:void(0)" class="btn-eliminar"
-                            onclick="confirmarEliminacion('{{ tarea.id }}')">Eliminar</a>
+            {% endif %}
+            {% endwith %}
 
 
-                        <a href="{{ url_for('editarActividad.editar_actividad', id=tarea.id) }}"
-                            class="btn-actualizar">Actualizar</a>
-                    </div>
+
+
+
+
+            <a href="{{ url_for('registrarActividad.NvActividad') }}" class="agregar-btn">Agregar</a>
+        </div>
+        <div class="tarjetas calendario-grid">
+            {% for tarea in tareas_importantes %}
+            <div class="tarjeta">
+                <img src="{{ tarea.imagen }}" class="icono-tarea">
+                <h3>{{ tarea.titulo }}</h3>
+                <span>{{ tarea.hora }}</span>
+                <span>{{ tarea.prioridad }}</span>
+                <p class="descripcion">{{ tarea.descripcion }}</p>
+
+                <!-- Aquí corregimos los nombres -->
+                <input type="checkbox" class="custom-checkbox" data-idx="{{ tarea.id }}" {% if tarea.completada
+                    %}checked{% endif %}>
+
+                <div class="acciones">
+                    <a href="javascript:void(0)" class="btn-eliminar"
+                        onclick="confirmarEliminacion('{{ tarea.id }}')">Eliminar</a>
+
+
+                    <a href="{{ url_for('editarActividad.editar_actividad', id=tarea.id) }}"
+                        class="btn-actualizar">Actualizar</a>
                 </div>
-                {% endfor %}
-
             </div>
-        </section>
-    </div>
-    {% else %}
-    <div class="calendario-header">
-        <h2>Hay un pequeño inconveniente para mostrar las tareas</h2>
-    </div>
-    {% endif %}
+            {% endfor %}
 
-    <script>
-        const checkboxes = document.querySelectorAll('.custom-checkbox');
+        </div>
+    </section>
+</div>
+{% else %}
+<div class="calendario-header">
+    <h2>Hay un pequeño inconveniente para mostrar las tareas</h2>
+</div>
+{% endif %}
 
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                const tareasCompletadas = Array.from(checkboxes)
-                    .filter(cbx => cbx.checked)
-                    .map(cbx => cbx.getAttribute('data-idx'));
+<script>
+    const checkboxes = document.querySelectorAll('.custom-checkbox');
 
-                fetch('/actualizar_tarea', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ tarea_completada: tareasCompletadas })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        const diasRacha = data.racha || 0;
-                        document.getElementById('dias-racha').innerText = diasRacha;
-                        actualizarEmojiRacha(diasRacha);
-                    });
-            });
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            const tareasCompletadas = Array.from(checkboxes)
+                .filter(cbx => cbx.checked)
+                .map(cbx => cbx.getAttribute('data-idx'));
+
+            fetch('/actualizar_tarea', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tarea_completada: tareasCompletadas })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const diasRacha = data.racha || 0;
+                    document.getElementById('dias-racha').innerText = diasRacha;
+                    actualizarEmojiRacha(diasRacha);
+                });
         });
+    });
 
-        function actualizarEmojiRacha(racha) {
-            const emoji = document.getElementById('emoji-racha');
-            if (racha >= 30) {
-                emoji.innerText = '🏆';
-            } else if (racha >= 20) {
-                emoji.innerText = '💪';
-            } else if (racha >= 10) {
-                emoji.innerText = '🔥';
-            } else if (racha >= 5) {
-                emoji.innerText = '😎';
-            } else if (racha >= 1) {
-                emoji.innerText = '😊';
-            } else {
-                emoji.innerText = '😴';
+    function actualizarEmojiRacha(racha) {
+        const emoji = document.getElementById('emoji-racha');
+        if (racha >= 30) {
+            emoji.innerText = '🏆';
+        } else if (racha >= 20) {
+            emoji.innerText = '💪';
+        } else if (racha >= 10) {
+            emoji.innerText = '🔥';
+        } else if (racha >= 5) {
+            emoji.innerText = '😎';
+        } else if (racha >= 1) {
+            emoji.innerText = '😊';
+        } else {
+            emoji.innerText = '😴';
+        }
+    }
+
+    // Lógica opcional para inicializar racha actual desde el backend
+    document.addEventListener('DOMContentLoaded', () => {
+        const diasRacha = parseInt(document.getElementById('dias-racha').innerText) || 0;
+        actualizarEmojiRacha(diasRacha);
+    });
+</script>
+
+
+<script>
+    function confirmarEliminacion(id) {
+        const tareaId = parseInt(id);
+        if (isNaN(tareaId)) return;
+
+        Swal.fire({
+            title: 'Confirmar eliminación',
+            text: '¿Estás seguro de que deseas eliminar la tarea?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Eliminar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `/eliminar_actividad/${tareaId}`;
             }
-        }
-
-        // Lógica opcional para inicializar racha actual desde el backend
-        document.addEventListener('DOMContentLoaded', () => {
-            const diasRacha = parseInt(document.getElementById('dias-racha').innerText) || 0;
-            actualizarEmojiRacha(diasRacha);
         });
-    </script>
+    }
 
-
-    <script>
-        function confirmarEliminacion(id) {
-            const tareaId = parseInt(id);
-            if (isNaN(tareaId)) return;
-
-            Swal.fire({
-                title: 'Confirmar eliminación',
-                text: '¿Estás seguro de que deseas eliminar la tarea?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Eliminar',
-                cancelButtonText: 'Cancelar',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = `/eliminar_actividad/${tareaId}`;
-                }
-            });
-        }
-
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 {% endblock %}
-

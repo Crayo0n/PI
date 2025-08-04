@@ -11,9 +11,6 @@ registrarUsuario_bp = Blueprint('registrarUsuario', __name__)
 def mostrarRegistrarse():
     print('Mostrando formulario de registro --------------------------------')
     errores = {}
-    if session.get('usuario_id'):
-        errores['userError'] = 'El usuario ya tiene una sesión abierta.'
-        return render_template('actividades.html', usuario_id = session.get('usuario_id'))
         
     return render_template('registrarse.html', errores=errores)
 
