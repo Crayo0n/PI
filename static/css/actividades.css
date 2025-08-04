@@ -573,3 +573,16 @@ h2{
 .btn-eliminar:hover {
     background-color: #d32f2f;
 }
+
+.racha-simplificada {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2a2a91;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px;
+}
+.racha-simplificada span#emoji-racha {
+  font-size: 28px;
+}

@@ -62,7 +62,8 @@ def editar_actividad(id):
 
             db.session.commit()
             flash('Actividad actualizada correctamente')
-            return redirect(url_for('actividades'))
+            return redirect(url_for('listaActividades.actividades'))
+
 
         except ValueError:
             errores['fecha'] = 'Formato de fecha u hora inválido'

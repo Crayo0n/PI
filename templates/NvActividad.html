@@ -1,32 +1,13 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends "plantilla.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Crear Nueva Actividad</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/NvActividades.css') }}">
-</head>
+{% block title %}Actividades - Priority Pulse{% endblock %}
 
-<body>
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/NvActividades.css') }}">
+{% endblock %}
+
+{% block content %}
     <div class="container">
-        <nav class="navbar">
-            <div class="box">
-                <button class="open-modal-btn">
-                    <span id="racha-fuego" class="racha">
-                        {{ racha }} 🔥
-                        <span class="manita">✋</span>
-                        <span class="carita">😊</span>
-                    </span>
-
-                </button>
-            </div>
-            <a href="#">Perfil</a>
-            <a href="">Rutinas</a>
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
-            </a>
-            <a href="{{ url_for('listaActividades.actividades') }}">Actividades</a>
-            <a href="#">Cerrar Sesión</a>
-        </nav>
         <div class="info">
 
 
@@ -117,6 +98,4 @@
         document.getElementById('rutaImagen').value = ruta;
     }
     </script>
-</body>
-
-</html>
+{% endblock %}

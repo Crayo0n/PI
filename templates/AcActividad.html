@@ -1,39 +1,22 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends "plantilla.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Actividad</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/NvActividades.css') }}">
-</head>
+{% block title %}Actividades - Priority Pulse{% endblock %}
 
-<body>
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/AcActividad.css') }}">
+{% endblock %}
+
+{% block content %}
     <div class="container">
-        <nav class="navbar">
-            <div class="box">
-                <button class="open-modal-btn">
-                    <span id="racha-fuego" class="racha">
-                        {{ racha }} 🔥
-                        <span class="manita">✋</span>
-                        <span class="carita">😊</span>
-                    </span>
-                </button>
-            </div>
-            <a href="#">Perfil</a>
-            <a href="#">Rutinas</a>
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
-            </a>
-            <a href="{{ url_for('listaActividades.actividades') }}">Actividades</a>
-            <a href="#">Cerrar Sesión</a>
-        </nav>
+        
 
 
         <div class="crear-actividad">
             <form method="POST" action="{{ url_for('editarActividad.editar_actividad', id=actividad.id) }}">
 
-                
+
                 <input type="hidden" name="rutaImagen" id="rutaImagen" value="{{ datos.rutaImagen }}">
-                <img id="imagen-actividad" src="{{ datos.rutaImagen }}" alt="Imagen de actividad"
+                <img id="imagen-actividad" src="/{{ datos.rutaImagen }}" alt="Imagen de actividad"
                     class="imagen-actividad">
                 {% if errores.rutaImagen %}
                 <p class="error">{{ errores.rutaImagen }}</p>
@@ -109,12 +92,11 @@
     </div>
 
     <script>
-        function cambiarImagen(imagenRuta) {
-            document.getElementById('imagen-actividad').src = "{{ url_for('static', filename='img') }}/" + imagenRuta;
-            document.getElementById('rutaImagen').value = "static/img/" + imagenRuta;
+        function cambiarImagen(nombre) {
+            const ruta = 'static/img/' + nombre;
+            document.getElementById('imagen-actividad').src = '/' + ruta;
+            document.getElementById('rutaImagen').value = ruta;
         }
     </script>
 
-</body>
-
-</html>
+{% endblock %}

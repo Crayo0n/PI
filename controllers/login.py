@@ -27,7 +27,8 @@ def login():
             if resultado:
                 print('Ingresando a lista de actividades ----------------------')
                 session['usuario_id'] = usuario.id 
-                return render_template('actividades.html', errores = errores) ###3## Cambiar URL
+                return redirect(url_for('listaActividades.actividades'))
+
             else:
                 errores['passwordError'] = 'La contraseña es incorrecta'
         else:

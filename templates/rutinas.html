@@ -1,33 +1,12 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends "plantilla.html" %}
 
-<head>
-  <meta charset="UTF-8">
-  <title>Rutinas - Priority Pulse</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/rutinas.css') }}">
-</head>
+{% block title %}Actividades - Priority Pulse{% endblock %}
 
-<body>
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/rutinas.css') }}">
+{% endblock %}
 
-
-  <nav class="navbar">
-    <div class="box">
-      <button class="open-modal-btn">
-        <span id="racha-fuego" class="racha" style="color: {{ color_racha }}">
-          {{ racha }} 🔥
-          <span class="manita">✋</span>
-          <span class="carita">😊</span>
-        </span>
-      </button>
-    </div>
-    <a href="">Perfil</a>
-    <a href="">Rutinas</a>
-    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
-    <a href="{{ url_for('listaActividades.actividades') }}">Actividades</a>
-    <a href="">Cerrar Sesión</a>
-  </nav>
-
-
+{% block content %}
   <main class="contenedor">
     <h1>Rutinas</h1>
     <div class="tarjetas">
@@ -43,7 +22,4 @@
 
     </div>
   </main>
-
-</body>
-
-</html>
+{% endblock %}
