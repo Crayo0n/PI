@@ -534,3 +534,42 @@ h2{
     60%  { transform: rotate(15deg); }
     80%  { transform: rotate(-10deg); }
 }
+
+.acciones {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: nowrap;
+}
+
+.acciones a {
+    display: inline-block;
+    white-space: nowrap;
+    padding: 6px 16px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+/* Botón de actualizar */
+.btn-actualizar {
+    background-color: #4caf50;
+}
+
+.btn-actualizar:hover {
+    background-color: #45a049;
+}
+
+/* Botón de eliminar */
+.btn-eliminar {
+    background-color: #f44336;
+}
+
+.btn-eliminar:hover {
+    background-color: #d32f2f;
+}
