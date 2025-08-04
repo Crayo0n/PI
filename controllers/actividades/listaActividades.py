@@ -34,6 +34,7 @@ def actividades():
                 'id': actividad.id,
                 'titulo': actividad.titulo,
                 'descripcion': actividad.descripcion,
+                'prioridad': actividad.prioridad,
                 'hora': actividad.hora.strftime('%H:%M') if actividad.hora else '',
                 'imagen': actividad.imagen,
                 'completada': False  

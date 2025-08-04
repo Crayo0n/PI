@@ -7,6 +7,9 @@ from config import Config
 from controllers.login import login_bp                #inicio de sesión
 from controllers.usuarios import usuarios_bps         #controllers de usuarios
 from controllers.actividades import actividades_bps   #rutas de actividades
+from controllers.rutinas import rutinas_bp
+
+
 
 
 app = Flask(__name__)
@@ -22,6 +25,9 @@ def create_tables():
 
 #Inicio de sesion
 app.register_blueprint(login_bp)
+
+#Rutinas
+app.register_blueprint(rutinas_bp)
 
 #Rutas de la aplicacion
 for bp in usuarios_bps + actividades_bps:

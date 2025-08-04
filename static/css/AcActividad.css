@@ -57,6 +57,12 @@ body {
     outline: none;
 }
 
+.error {
+    color: red;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
 
 .crear-actividad {
     background: white;

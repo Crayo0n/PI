@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <title>Rutinas - Priority Pulse</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/rutinas.css') }}">
 </head>
+
 <body>
 
 
@@ -18,11 +20,11 @@
         </span>
       </button>
     </div>
-    <a href="{{ url_for('perfil') }}">Perfil</a>
-    <a href="{{ url_for('rutinas') }}">Rutinas</a>
+    <a href="">Perfil</a>
+    <a href="">Rutinas</a>
     <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
-    <a href="{{ url_for('actividades') }}">Actividades</a>
-    <a href="{{ url_for('login') }}">Cerrar Sesión</a>
+    <a href="{{ url_for('listaActividades.actividades') }}">Actividades</a>
+    <a href="">Cerrar Sesión</a>
   </nav>
 
 
@@ -30,22 +32,18 @@
     <h1>Rutinas</h1>
     <div class="tarjetas">
       {% for rutina in rutinas %}
-      <div class="tarjeta">
-        <img src="{{ url_for('static', filename=rutina.img) }}" alt="{{ rutina.title }}">
-        <h2>{{ rutina.title }}</h2>
-        <p><strong>Objetivo:</strong> {{ rutina.objective }}</p>
-        <ul>
-          {% for act in rutina.activities %}
-            <li>{{ act }}</li>
-          {% endfor %}
-        </ul>
-        <a href="{{ url_for('nueva_actividad') }}?rutina_id={{ rutina.id }}" class="btn">
-          Agregar a Actividades
-        </a>
+      <div class="rutina-card">
+        <h3>{{ rutina.titulo }}</h3>
+        <p>{{ rutina.descripcion }}</p>
+        <form method="POST" action="{{ url_for('rutinas.agregar_rutina', id=rutina.id) }}">
+          <button type="submit">Añadir a mis actividades</button>
+        </form>
       </div>
       {% endfor %}
+
     </div>
   </main>
 
 </body>
+
 </html>

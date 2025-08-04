@@ -18,45 +18,73 @@ def editar_actividad(id):
         flash('Actividad no encontrada', 'error')
         return redirect(url_for('actividades'))
 
+    # Si se envía el formulario
     if request.method == 'POST':
-        titulo = request.form.get('nombre', '').strip()
-        fecha = request.form.get('fecha', '').strip()
-        repeticion = request.form.get('repetir', '').strip()
-        hora = request.form.get('hora', '').strip()
-        prioridad = request.form.get('prioridad', '').strip()
-        descripcion = request.form.get('descripcion', '').strip()
-        rutaImagen = request.form.get('rutaImagen', '').strip()
+        datos = {
+            'titulo': request.form.get('nombre', '').strip(),
+            'fecha': request.form.get('fecha', '').strip(),
+            'repeticion': request.form.get('repetir', '').strip(),
+            'hora': request.form.get('hora', '').strip(),
+            'prioridad': request.form.get('prioridad', '').strip(),
+            'descripcion': request.form.get('descripcion', '').strip(),
+            'rutaImagen': request.form.get('rutaImagen', '').strip()
+        }
 
-        if not titulo or not fecha or not repeticion or not hora or not prioridad or not descripcion or not rutaImagen:
-            errores['emptyValues'] = "Hay campos vacíos"
-        else:
-            try:
+        # Validaciones por campo
+        if not datos['titulo']:
+            errores['titulo'] = 'El título es obligatorio'
+        if not datos['fecha']:
+            errores['fecha'] = 'La fecha es obligatoria'
+        if not datos['repeticion']:
+            errores['repeticion'] = 'Seleccione una frecuencia'
+        if not datos['hora']:
+            errores['hora'] = 'La hora es obligatoria'
+        if not datos['prioridad']:
+            errores['prioridad'] = 'Seleccione una prioridad'
+        if not datos['descripcion']:
+            errores['descripcion'] = 'La descripción es obligatoria'
+        if not datos['rutaImagen']:
+            errores['rutaImagen'] = 'Debe seleccionar una imagen'
 
-                fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
-                hora_obj = datetime.strptime(hora, '%H:%M').time()
-            except ValueError:
-                errores['fechaError'] = 'Formato de fecha incorrecto. Use YYYY-MM-DD.'
-                return render_template('editar_actividad.html', actividad=actividad, errores=errores)
+        # Si hay errores, renderiza con datos nuevos
+        if errores:
+            return render_template('AcActividad.html', actividad=actividad, errores=errores, datos=datos)
 
-            try:
-                actividad.titulo = titulo
-                actividad.fecha = fecha_obj
-                actividad.repetir = repeticion
-                actividad.hora = hora_obj
-                actividad.prioridad = prioridad
-                actividad.descripcion = descripcion
-                actividad.imagen = rutaImagen
+        # Si no hay errores, intenta guardar cambios
+        try:
+            actividad.titulo = datos['titulo']
+            actividad.fecha = datetime.strptime(datos['fecha'], '%Y-%m-%d').date()
+            actividad.repetir = datos['repeticion']
+            actividad.hora = datetime.strptime(datos['hora'], '%H:%M').time()
+            actividad.prioridad = datos['prioridad']
+            actividad.descripcion = datos['descripcion']
+            actividad.imagen = datos['rutaImagen']
 
-                db.session.commit()
-                flash('Actividad actualizada correctamente')
-                return redirect(url_for('actividades'))
+            db.session.commit()
+            flash('Actividad actualizada correctamente')
+            return redirect(url_for('actividades'))
 
-            except SQLAlchemyError as e:
-                errores['dbError'] = 'Error al actualizar la actividad en la base de datos'
-                db.session.rollback() 
-            except Exception as e:
-                errores['dbError'] = 'Error al actualizar la actividad'
-                
-        return render_template('editar_actividad.html', actividad=actividad, errores=errores)
+        except ValueError:
+            errores['fecha'] = 'Formato de fecha u hora inválido'
+            return render_template('AcActividad.html', actividad=actividad, errores=errores, datos=datos)
 
-    return render_template('AcActividad.html', actividad=actividad, errores=errores)
+        except SQLAlchemyError as e:
+            errores['dbError'] = 'Error al guardar en la base de datos'
+            db.session.rollback()
+        except Exception as e:
+            errores['dbError'] = 'Error inesperado al actualizar'
+
+        return render_template('AcActividad.html', actividad=actividad, errores=errores, datos=datos)
+
+    # Método GET: renderiza con valores actuales
+    datos = {
+        'titulo': actividad.titulo,
+        'fecha': actividad.fecha.strftime('%Y-%m-%d'),
+        'repeticion': actividad.repetir,
+        'hora': actividad.hora.strftime('%H:%M'),
+        'prioridad': actividad.prioridad,
+        'descripcion': actividad.descripcion,
+        'rutaImagen': actividad.imagen
+    }
+
+    return render_template('AcActividad.html', actividad=actividad, errores=errores, datos=datos)

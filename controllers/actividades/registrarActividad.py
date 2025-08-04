@@ -18,57 +18,72 @@ def NvActividad():
     racha = 0
     color_racha = 'default'
     errores = {}
-    return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores=errores)
+    datos = {}
+    return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores=errores, datos=datos)
 
-@registrarActividad_bp.route('/nueva_actividad',methods=['POST'])
+@registrarActividad_bp.route('/nueva_actividad', methods=['POST'])
 def PostNvActividad():
-    print("Recibiendo datos de nueva actividad")
     errores = {}
-    titulo = request.form.get('nombre', '').strip()
-    fecha = request.form.get('fecha', '').strip()
-    repeticion = request.form.get('repetir', '').strip()
-    hora = request.form.get('hora', '').strip()
-    prioridad = request.form.get('prioridad', '').strip()
-    descripcion = request.form.get('descripcion', '').strip()
-    rutaImagen = request.form.get('rutaImagen', '').strip()
-        
-    if not titulo or not fecha or not repeticion or not hora or not prioridad or not descripcion or not rutaImagen:
-        errores['empyValues'] = "Hay campos vacios"
-    else:
-        print(f"Datos recibidos para actividad: {titulo}, {fecha}, {repeticion}, {hora}, {prioridad}, {descripcion}, {rutaImagen}")
-        try:
-            fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
-            hora_obj = datetime.strptime(hora, '%H:%M').time()
-        except ValueError:
-            errores['fechaError'] = 'Formato de fecha incorrecto. Use YYYY-MM-DD.'
-            print(f"Error de formato de fecha: {fecha}")
-            return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores=errores)
-        try:
-            usuario_id = session.get('usuario_id')
-            print(f"ID del usuario: {usuario_id}")
-            nueva_tarea = tablas.Actividades(
-                titulo = titulo,
-                fecha = fecha_obj,
-                repetir = repeticion,
-                hora = hora_obj,
-                prioridad = prioridad,
-                descripcion = descripcion,
-                imagen = rutaImagen,
-                usuario_id=usuario_id
-            )
-            print(f"Nueva tarea creada: {nueva_tarea}")
-            db.session.add(nueva_tarea)
-            db.session.commit()
-            flash('Actividad agregada correctamente')
-            return redirect(url_for('actividades'))
-        
-        except SQLAlchemyError as e:
-            errores['dbError'] = 'Error al guardar actividad en la base de datos'
-            print(f"Error al guardar actividad en la base de datos: {e}")
-            db.session.rollback()
+    datos = {}  # <- aquí guardaremos los datos del formulario
 
-        except Exception as e:
-            print(f"Error al guardar actividad: {e}")
-            errores['dbError'] = 'Error al guardar actividad'
-            
-    return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores = errores)
+    # Obtener valores del formulario
+    datos['titulo'] = request.form.get('nombre', '').strip()
+    datos['fecha'] = request.form.get('fecha', '').strip()
+    datos['repeticion'] = request.form.get('repetir', '').strip()
+    datos['hora'] = request.form.get('hora', '').strip()
+    datos['prioridad'] = request.form.get('prioridad', '').strip()
+    datos['descripcion'] = request.form.get('descripcion', '').strip()
+    datos['rutaImagen'] = request.form.get('rutaImagen', '').strip()
+
+    # Validaciones por campo
+    if not datos['titulo']:
+        errores['titulo'] = 'El título es obligatorio'
+    if not datos['fecha']:
+        errores['fecha'] = 'La fecha es obligatoria'
+    if not datos['repeticion']:
+        errores['repeticion'] = 'Debe seleccionar una frecuencia de repetición'
+    if not datos['hora']:
+        errores['hora'] = 'La hora es obligatoria'
+    if not datos['prioridad']:
+        errores['prioridad'] = 'Debe seleccionar una prioridad'
+    if not datos['descripcion']:
+        errores['descripcion'] = 'La descripción es obligatoria'
+    if not datos['rutaImagen']:
+        errores['rutaImagen'] = 'Debe seleccionar una imagen'
+
+    # Si hay errores, renderizamos con los datos ingresados
+    if errores:
+        print("Errores detectados:", errores)
+        return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores=errores, datos=datos)
+
+    try:
+        fecha_obj = datetime.strptime(datos['fecha'], '%Y-%m-%d').date()
+        hora_obj = datetime.strptime(datos['hora'], '%H:%M').time()
+    except ValueError:
+        errores['fecha'] = 'Formato de fecha u hora incorrecto'
+        print(f"Error de formato: fecha={datos['fecha']}, hora={datos['hora']}")
+        return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores=errores, datos=datos)
+
+    try:
+        usuario_id = session.get('usuario_id')
+        nueva_tarea = tablas.Actividades(
+            titulo=datos['titulo'],
+            fecha=fecha_obj,
+            repetir=datos['repeticion'],
+            hora=hora_obj,
+            prioridad=datos['prioridad'],
+            descripcion=datos['descripcion'],
+            imagen=datos['rutaImagen'],
+            usuario_id=usuario_id
+        )
+        db.session.add(nueva_tarea)
+        db.session.commit()
+        flash('Actividad agregada correctamente')
+        return redirect(url_for('listaActividades.actividades'))
+
+    except SQLAlchemyError as e:
+        errores['dbError'] = 'Error al guardar en la base de datos'
+        print("Error SQL:", e)
+        db.session.rollback()
+
+    return render_template('NvActividad.html', racha=racha, color_racha=color_racha, errores=errores, datos=datos)

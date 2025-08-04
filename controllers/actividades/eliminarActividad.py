@@ -15,18 +15,19 @@ def eliminar_actividad(id):
     
     if not actividad:
         flash('Actividad no encontrada', 'error')
-        return redirect(url_for('actividades'))
+        return redirect(url_for('listaActividades.actividades'))
 
     try:
         actividad.estado = 0
-        db.session.commit()
-        flash('Actividad eliminada correctamente')
-        return redirect(url_for('actividades'))
+        db.session.commit()  # 👈 Si esto falla, no se muestra el mensaje de éxito
+        flash('Actividad eliminada correctamente', 'success')
+        return redirect(url_for('listaActividades.actividades'))
 
     except SQLAlchemyError as e:
-        flash('Error al eliminar la actividad', 'error')
         db.session.rollback() 
-    except Exception as e:
-        flash('Error al eliminar la actividad', 'error')
+        flash('Error al eliminar la actividad (base de datos)', 'error')
 
-    return redirect(url_for('actividades'))
+    except Exception as e:
+        flash('Error inesperado al eliminar la actividad', 'error')
+
+    return redirect(url_for('listaActividades.actividades'))

@@ -11,14 +11,14 @@
 
 <body>
     {% if errores and errores.actividades_error %}
-        <script>
-            Swal.fire({
-                title: 'Mensaje',
-                text: '{{ errores.actividades_error }}',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-        </script>
+    <script>
+        Swal.fire({
+            title: 'Mensaje',
+            text: '{{ errores.actividades_error }}',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+    </script>
     {% endif %}
     <nav class="navbar">
         <div class="box">
@@ -44,48 +44,67 @@
                 </div>
             </div>
         </div>
-        <a href="rutinas">Rutinas</a>
+        <a href="{{ url_for('rutinas.mostrar_rutinas') }}">Rutinas</a>
         <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
-        <a href="{{ url_for('actividades') }}">Actividades</a>
-        <a href="{{ url_for('login') }}">Cerrar Sesión</a>
+        <a href="{{ url_for('listaActividades.actividades') }}">Actividades</a>
+        <a href="{{ url_for('login.home') }}">Cerrar Sesión</a>
     </nav>
 
     {% if errores and errores.no_actividades %}
-        <div class="calendario-header">
-            <h2>No hay actividades para mostrar</h2>
-            <a href="{{ url_for('NvActividad') }}" class="crear-actividad-btn"><h2>Crear mi nueva actividad</h2></a>
-        </div>
+    <div class="calendario-header">
+        <h2>No hay actividades para mostrar</h2>
+        <a href="{{ url_for('registrarActividad.NvActividad') }}" class="crear-actividad-btn">
+            <h2>Crear mi nueva actividad</h2>
+        </a>
+    </div>
     {% elif tareas_importantes|length > 0 %}
-        <div class="Tareas_Dia">
-            <section class="calendario">
-                <div class="calendario-header">
-                    <h2>Tareas por completar</h2>
-                    <a href="{{ url_for('NvActividad') }}" class="agregar-btn">Agregar</a>
-                </div>
-                <div class="tarjetas calendario-grid">
-                    {% for tarea in tareas_importantes %}
-                    <div class="tarjeta {% if tarea.completada %}completada{% endif %}">
-                        <img src="{{ tarea.imagen }}" class="icono-tarea">
-                        <h3>{{ tarea.titulo }}</h3>
-                        <span>{{ tarea.hora }}</span>
-                        <p class="descripcion">{{ tarea.descripcion }}</p>
-                        <!-- añadir onclick para cambiar el estado de la tarea en la base de datos -->
-                        <input type="checkbox" class="custom-checkbox" {% if tarea.completada %}checked{% endif %}> 
+    <div class="Tareas_Dia">
+        <section class="calendario">
+            <div class="calendario-header">
+                <h2>Tareas por completar</h2>
 
-                        <div class="acciones">
-                            <a href="javascript:void(0)" class="btn-eliminar" onclick="confirmarEliminacion('{{ tarea.id }}')">Eliminar</a>
 
-                            <a href="{{ url_for('editar_actividad', id=tarea.id) }}" class="btn-actualizar">Actualizar</a>
-                        </div>
+                {% with mensajes = get_flashed_messages() %}
+                {% if mensajes %}
+                {% for msj in mensajes %}
+                <h4>{{ msj }}</h4>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+
+
+
+
+                <a href="{{ url_for('registrarActividad.NvActividad') }}" class="agregar-btn">Agregar</a>
+            </div>
+            <div class="tarjetas calendario-grid">
+                {% for tarea in tareas_importantes %}
+                <div class="tarjeta {% if tarea.completada %}completada{% endif %}">
+                    <img src="{{ tarea.imagen }}" class="icono-tarea">
+                    <h3>{{ tarea.titulo }}</h3>
+                    <span>{{ tarea.hora }}</span>
+                    <span>{{ tarea.prioridad }}</span>
+                    <p class="descripcion">{{ tarea.descripcion }}</p>
+                    <!-- añadir onclick para cambiar el estado de la tarea en la base de datos -->
+                    <input type="checkbox" class="custom-checkbox" {% if tarea.completada %}checked{% endif %}>
+
+                    <div class="acciones">
+                        <a href="javascript:void(0)" class="btn-eliminar"
+                            onclick="confirmarEliminacion('{{ tarea.id }}')">Eliminar</a>
+
+                        <a href="{{ url_for('editarActividad.editar_actividad', id=tarea.id) }}"
+                            class="btn-actualizar">Actualizar</a>
                     </div>
-                    {% endfor %}
                 </div>
-            </section>
-        </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
     {% else %}
-        <div class="calendario-header">
-            <h2>Hay un pequeño inconveniente para mostrar las tareas</h2>
-        </div>
+    <div class="calendario-header">
+        <h2>Hay un pequeño inconveniente para mostrar las tareas</h2>
+    </div>
     {% endif %}
 
     <script>
@@ -121,7 +140,7 @@
             // Calcular fase (cada 10 días de racha es una fase)
             const fase = Math.min(Math.floor(racha / 10), 19);
             fogata.className = `fogata etapa-${fase}`;
-            
+
             // Efecto especial cada 10 días (nueva fase)
             if (racha % 10 === 0 && racha > 0) {
                 fogata.classList.add('saludar');
@@ -134,24 +153,24 @@
             const fogata = document.getElementById('fogata');
             const chispasContainer = fogata.querySelector('.chispas');
             if (!chispasContainer) return;
-            
+
             const racha = parseInt(document.querySelector('#dias-racha').innerText);
             const fase = Math.min(Math.floor(racha / 10), 19);
-            
+
             for (let i = 0; i < cantidad; i++) {
                 const spark = document.createElement('div');
                 spark.className = 'spark';
-                
+
                 // Posición y animación aleatoria
                 const posX = (Math.random() - 0.5) * 100;
                 const duration = 0.8 + Math.random() * 1.2;
                 const delay = Math.random() * 0.5;
-                const color = fase >= 15 ? 
-                    (Math.random() > 0.5 ? '#4fc3f7' : '#81d4fa') : 
-                    (fase >= 10 ? 
-                        (Math.random() > 0.5 ? '#ff8a65' : '#ff5722') : 
+                const color = fase >= 15 ?
+                    (Math.random() > 0.5 ? '#4fc3f7' : '#81d4fa') :
+                    (fase >= 10 ?
+                        (Math.random() > 0.5 ? '#ff8a65' : '#ff5722') :
                         (Math.random() > 0.5 ? '#ffecb3' : '#ffcc80'));
-                
+
                 spark.style.cssText = `position: absolute; width: ${2 + Math.random() * 3}px; height: ${2 + Math.random() * 3}px; background: ${color}; border-radius: 50%; bottom: 40%; left: 50%; opacity: 0; box-shadow: 0 0 5px ${fase >= 15 ? '#00bcd4' : (fase >= 10 ? '#ff3d00' : '#ff9800')};`;
 
                 // Animación de la chispa
@@ -160,7 +179,7 @@
                 const style = document.createElement('style');
                 style.textContent = keyframes;
                 document.head.appendChild(style);
-                
+
                 spark.style.animation = `spark-fly-${i} ${duration}s ease-in ${delay}s forwards`;
                 chispasContainer.appendChild(spark);
             }
@@ -175,22 +194,22 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.2/dist/sweetalert2.all.min.js"></script>
 
     <script>
-    function confirmarEliminacion(id) {
-        id = parseInt(id);
-        Swal.fire({
-            title: 'Confirmar eliminación',
-            text: '¿Estás seguro de que deseas eliminar la tarea?',
-            icon: 'warning',
-            showCancelButton: true,  // Muestra el botón "Cancelar"
-            confirmButtonText: 'Eliminar',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true  // Cambia el orden de los botones (primero el "Cancelar")
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "/eliminar_actividad/" + id;
-            }
-        });
-    }
+        function confirmarEliminacion(id) {
+            id = parseInt(id);
+            Swal.fire({
+                title: 'Confirmar eliminación',
+                text: '¿Estás seguro de que deseas eliminar la tarea?',
+                icon: 'warning',
+                showCancelButton: true,  // Muestra el botón "Cancelar"
+                confirmButtonText: 'Eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true  // Cambia el orden de los botones (primero el "Cancelar")
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/eliminar_actividad/" + id;
+                }
+            });
+        }
     </script>
 </body>
 

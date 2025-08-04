@@ -153,6 +153,12 @@ form input, form select, form textarea {
 form textarea {
     height: 120px;
 }
+.error {
+    color: red;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
 
 button.crear-btn {
     width: 100%;
@@ -170,6 +176,7 @@ button.crear-btn:hover {
     background-color: #7b1fa2;
     transform: scale(1.1);
 }
+
 
 /* Animación de fuego */
 @keyframes fuego {
