@@ -1,51 +1,41 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Rutinas - Priority Pulse</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/rutinas.css') }}">
-</head>
-<body>
+{% extends "plantilla.html" %}
 
+{% block title %}Rutinas - Priority Pulse{% endblock %}
 
-  <nav class="navbar">
-    <div class="box">
-      <button class="open-modal-btn">
-        <span id="racha-fuego" class="racha" style="color: {{ color_racha }}">
-          {{ racha }} 🔥
-          <span class="manita">✋</span>
-          <span class="carita">😊</span>
-        </span>
-      </button>
-    </div>
-    <a href="{{ url_for('perfil') }}">Perfil</a>
-    <a href="{{ url_for('rutinas') }}">Rutinas</a>
-    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
-    <a href="{{ url_for('actividades') }}">Actividades</a>
-    <a href="{{ url_for('login') }}">Cerrar Sesión</a>
-  </nav>
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/rutinas.css') }}">
+{% endblock %}
 
+{% block content %}
+  <main class="rutinas-wrapper">
+    <section class="rutinas-panel">
+      <header class="rutinas-header">
+        <div class="rutinas-header-text">
+          <h1 class="rutinas-title">Rutinas recomendadas</h1>
+          <p class="rutinas-subtitle">
+            Elige una rutina predefinida y añádela a tus actividades para mantener tu racha y organizar mejor tu día.
+          </p>
+        </div>
+      </header>
 
-  <main class="contenedor">
-    <h1>Rutinas</h1>
-    <div class="tarjetas">
-      {% for rutina in rutinas %}
-      <div class="tarjeta">
-        <img src="{{ url_for('static', filename=rutina.img) }}" alt="{{ rutina.title }}">
-        <h2>{{ rutina.title }}</h2>
-        <p><strong>Objetivo:</strong> {{ rutina.objective }}</p>
-        <ul>
-          {% for act in rutina.activities %}
-            <li>{{ act }}</li>
-          {% endfor %}
-        </ul>
-        <a href="{{ url_for('nueva_actividad') }}?rutina_id={{ rutina.id }}" class="btn">
-          Agregar a Actividades
-        </a>
+      <div class="rutinas-grid">
+        {% for rutina in rutinas %}
+        <article class="rutina-card">
+          <div class="rutina-card-body">
+            <h3 class="rutina-card-title">{{ rutina.titulo }}</h3>
+            <p class="rutina-card-desc">{{ rutina.descripcion }}</p>
+          </div>
+
+          <form method="POST"
+                action="{{ url_for('rutinas.agregar_rutina', id=rutina.id) }}"
+                class="rutina-card-form">
+            <button type="submit" class="rutina-card-btn">
+              Añadir a mis actividades
+            </button>
+          </form>
+        </article>
+        {% endfor %}
       </div>
-      {% endfor %}
-    </div>
+    </section>
   </main>
-
-</body>
-</html>
+{% endblock %}

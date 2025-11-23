@@ -1,37 +1,61 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Login - Priority Pulse</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/login.css') }}">
 </head>
-<body>
 
-    <div class="login-container">
-        <img src="{{ url_for('static', filename='/img/logo.png') }}" alt="Priority Pulse Logo" class="logo">
-        <h2>Haz de tus tareas una prioridad</h2>
-        <h3>Login</h3>
-        {% if error %}
-            <p style="color: red; font-weight: bold;">{{ error }}</p>
-        {% endif %}
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                    {% for category, message in messages %}
-                        <p style="color: green; font-weight: bold;">{{ message }}</p> 
-                    {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        <form method="POST" action="{{ url_for('login') }}">
-            <input type="email" name="email" placeholder="Email" required>
-            <div class="password-container">
-                <input type="password" name="password" placeholder="Contraseña" id="pwd" required>
-                <input type="checkbox" class="show-password" onclick="pwd.type=this.checked ? 'text': 'password'">
+<body>
+    <div class="login-page">
+        <div class="login-container">
+            <img src="{{ url_for('static', filename='/img/logo.png') }}" alt="Priority Pulse Logo" class="logo">
+
+            <div class="login-header">
+                <h2>Haz de tus tareas una prioridad</h2>
+                <h3>Login</h3>
             </div>
-            <button type="submit">Iniciar Sesión</button>
-        </form>
-        <p class="register-link">¿No tienes cuenta? <a href="{{ url_for('registrarse') }}">Regístrate</a></p>
+
+            {% if errores and errores.emptyValues %}
+            <p class="login-error-msg">{{ errores.emptyValues }}</p>
+            {% elif errores and errores.userError %}
+            <p class="login-error-msg">{{ errores.userError }}</p>
+            {% elif errores and errores.passwordError %}
+            <p class="login-error-msg">{{ errores.passwordError }}</p>
+            {% endif %}
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <p class="login-success-msg">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login.login') }}" class="login-form">
+                <div class="field-group">
+                    <input type="email" name="email" placeholder="Email">
+                </div>
+
+                <div class="field-group password-container">
+                    <input type="password" name="password" placeholder="Contraseña" id="pwd" class="password-input">
+                    <label class="toggle-password">
+                        <input type="checkbox" class="show-password"
+                               onclick="pwd.type=this.checked ? 'text': 'password'">
+                        <span>Mostrar</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="login-btn">Iniciar Sesión</button>
+            </form>
+
+            <p class="register-link">
+                ¿No tienes cuenta?
+                <a href="{{ url_for('registrarUsuario.mostrarRegistrarse') }}">Regístrate</a>
+            </p>
+        </div>
     </div>
 </body>
-</html>
 
+</html>

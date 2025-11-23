@@ -9,35 +9,39 @@
     <div class="register-container">
         <img src="{{ url_for('static', filename='/img/logo.png') }}" alt="Priority Pulse Logo" class="logo">
         <h3>Sign Up</h3>
-        {% if error %}
-            <p style="color: red;">{{ error }}</p>
+        {% if errores and errores.emptyValues %}
+            <p style="color: red;">{{ errores.emptyValues }}</p>
+        {% elif errores and errores.userExist %}
+            <p style="color: red;">{{ errores.userExist }}</p>
+        {% elif errores and errores.dbError %}
+            <p style="color: red;">{{ errores.dbError }}</p>
         {% endif %}
 
-        <form method="POST" action="{{ url_for('registrarse') }}">
+        <form method="POST" action="{{ url_for('registrarUsuario.registrarse') }}">
             <div class="row">
-                <input type="text" name="Nombre" placeholder="Nombre" >
+                <input type="text" name="Nombre" placeholder="Nombre" value="{{request.form.Nombre or ''}}">
                 {% if errores and errores.Nombre %}
                     <p style="color:red">{{errores.Nombre}}</p>
                 {% endif %}
 
-                <input type="text" name="Apellido" placeholder="Apellido" >
+                <input type="text" name="Apellido" placeholder="Apellido" value="{{request.form.Apellido or ''}}">
                 {% if errores and errores.Apellido %}
                     <p style="color:red">{{errores.Apellido}}</p>
                 {% endif %}
             </div>
             <div class="row">
-                    <input type="password" name="password" placeholder="Contraseña" id="pwd">
+                    <input type="password" name="password" placeholder="Contraseña" id="pwd" value="{{request.form.password or ''}}">
                     <input type="password" name="confirm_password" placeholder="Confirma tu Contraseña" id="conf_pwd">
             </div>
             <div class="row">
-                <input type="email" name="Email" placeholder="Email" >
+                <input type="email" name="Email" placeholder="Email" value="{{request.form.Email or ''}}">
                 {% if errores and errores.Email %}
                     <p style="color:red">{{errores.Email}}</p>
                 {% endif %}
             </div>
             <button type="submit">Registrarte</button>
         </form>
-        <p class="login-link">¿Ya tienes una cuenta? <a href="{{ url_for('login') }}">Inicia Sesión</a></p>
+        <p class="login-link">¿Ya tienes una cuenta? <a href="{{ url_for('login.home') }}">Inicia Sesión</a></p>
     </div>
 </body>
 </html>
