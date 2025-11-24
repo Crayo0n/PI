@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Perfil - Priority Pulse</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/perfil.css') }}">
-     <!-- link para sweetalert -->
+    <!-- link para sweetalert -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.2/dist/sweetalert2.min.css">
 </head>
 <body>
@@ -43,7 +43,7 @@
         <!-- Estadísticas -->
         <section class="estadisticas">
             <h2>Estadística de actividades</h2>
-            <h3>{{ mes }}, {{ anio }}</h3>  <!-- Mostrará el mes y año actual -->
+            <h3>{{ mes }}, {{ anio }}</h3>
             <table class="calendario">
                 <thead>
                     <tr>
@@ -51,25 +51,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tbody>
-                        {% for semana in semanas %}
-                        <tr>
-                            {% for dia in semana %}
-                                <td>
-                                    {% if dia != 0 %}
-                                        {% if dias_cumplidos and dia in dias_cumplidos %}
-                                            <span class="{{ dias_cumplidos[dia] }}"></span>
-                                        {% else %}
-                                            {{ dia }}
-                                        {% endif %}
+                    {% for semana in semanas %}
+                    <tr>
+                        {% for dia in semana %}
+                            <td>
+                                {% if dia != 0 %}
+                                    {% if dias_cumplidos and dia in dias_cumplidos %}
+                                        <span class="{{ dias_cumplidos[dia] }}"></span>
                                     {% else %}
-                                        &nbsp;
+                                        {{ dia }}
                                     {% endif %}
-                                </td>
-                            {% endfor %}
-                        </tr>
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}
+                            </td>
                         {% endfor %}
-                    </tbody>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
 
@@ -78,14 +76,14 @@
                 <div><span class="completo"></span> Todas las actividades completas</div>
             </div>
         </section>
-         {% with mensajes = get_flashed_messages() %}
+
+        {% with mensajes = get_flashed_messages() %}
             {% if mensajes %}
                 {% for msj in mensajes %}
                     <h4>{{ msj }}</h4>
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        
     </main>
 
     <!-- link para sweetalert -->
@@ -97,10 +95,10 @@
                 title: 'Eliminación de cuenta',
                 text: '¿Estás seguro de que deseas eliminar tu cuenta? ALERTA: Esta acción no se puede deshacer.',
                 icon: 'warning',
-                showCancelButton: true,  // Muestra el botón "Cancelar"
+                showCancelButton: true,
                 confirmButtonText: 'Eliminar',
                 cancelButtonText: 'Cancelar',
-                reverseButtons: true  // Cambia el orden de los botones (primero el "Cancelar")
+                reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = "/eliminar_cuenta";
@@ -108,6 +106,5 @@
             });
         }
     </script>
-
 </body>
 </html>

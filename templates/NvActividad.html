@@ -1,104 +1,119 @@
-    <!DOCTYPE html>
-    <html lang="es">
+{% extends "plantilla.html" %}
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Crear Nueva Actividad</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/NvActividades.css') }}">
-    </head>
+{% block title %}Nueva Actividad - Priority Pulse{% endblock %}
 
-    <body>
-        <div class="container">
-            <nav class="navbar">
-                <div class="box">
-                    <button class="open-modal-btn">
-                        <span id="racha-fuego" class="racha" >
-                            {{ racha }} 🔥
-                            <span class="manita">✋</span>
-                            <span class="carita">😊</span>
-                        </span>
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/NvActividades.css') }}">
+{% endblock %}
 
-                    </button>
-                </div>
-                <a href="#">Perfil</a>
-                <a href="#">Rutinas</a>
-                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
-                </a>
-                <a href="{{ url_for('actividades') }}">Actividades</a>
-                <a href="#">Cerrar Sesión</a>
-            </nav>
-            <div class="info">
-                {% with mensajes = get_flashed_messages() %}
-                    {% if mensajes %}
-                        {% for msj in mensajes %}
-                            <h4>{{ msj }}</h4>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
+{% block content %}
+  <div class="container nv-actividad-wrapper">
+    <section class="nv-actividad-panel">
+      <header class="nv-actividad-header">
+        <div class="nv-actividad-header-text">
+          <h1 class="nv-actividad-title">Nueva actividad</h1>
+          <p class="nv-actividad-subtitle">
+            Personaliza tu tarea eligiendo una imagen, fecha, prioridad y descripción.
+          </p>
+        </div>
+      </header>
 
-                {% if errores %}
-                    {% if errores.emptyValues %}
-                        <h4>{{ errores.emptyValues }}</h4>
-                {% endif %}
-                {% if errores.dbError %}
-        <h4>{{ errores.dbError }}</h4>
-    {% endif %}
-{% endif %}
-
-            </div>
-            <div class="crear-actividad">
-
-                <form method="POST" action="{{ url_for('PostNvActividad') }}">
-                <img id="imagen-actividad" src="{{ url_for('static', filename='img/imagen1.png') }}"
-                    alt="Imagen de actividad" class="imagen-actividad">
-
-                <input type="text" id="nombre" name="nombre" class="actividad-titulo" placeholder="Tarea" required>
-
-                <div class="color-palette">
-                    <div class="color-box pink" onclick="cambiarImagen('static/img/Imagen1.png')"></div>
-                    <div class="color-box orange" onclick="cambiarImagen('static/img/imagen3.png')"></div>
-                    <div class="color-box green" onclick="cambiarImagen('static/img/imagen4.png')"></div>
-                    <div class="color-box yellow" onclick="cambiarImagen('static/img/imagen5.png')"></div>
-                    <div class="color-box blue" onclick="cambiarImagen('static/img/imagen2.png')"></div>
-                    <div class="color-box purple" onclick="cambiarImagen('static/img/imagen6.png')"></div>
-                </div>
-
-                    <label for="fecha">Fecha</label>
-                    <input type="date" id="fecha" name="fecha">
-
-                    <label for="repetir">Repetir</label>
-                    <select id="repetir" name="repetir">
-                        <option value="diario">Diario</option>
-                        <option value="semanal">Semanal</option>
-                        <option value="mensual">Mensual</option>
-                    </select>
-
-                    <label for="hora">Hora</label>
-                    <input type="time" id="hora" name="hora">
-
-                    <label for="prioridad">Prioridad</label>
-                    <select id="prioridad" name="prioridad">
-                        <option value="alta">Alta</option>
-                        <option value="media">Media</option>
-                        <option value="baja">Baja</option>
-                    </select>
-
-                    <label for="descripcion">Descripción</label>
-                    <textarea id="descripcion" name="descripcion"></textarea>
-                    
-                    <input type = "hidden" id="rutaImagen" name="rutaImagen" value="static/img/imagen1.png">
-
-                    <button type="submit" class="crear-btn">Crear</button>
-                </form>
-            </div>
+      <div class="nv-actividad-content">
+        <div class="info">
+          <!-- Si después quieres agregar tips o texto guía, va aquí -->
         </div>
 
-        <script>
-            function cambiarImagen(imagen) {
-                document.getElementById('imagen-actividad').src = imagen;
-                document.getElementById('rutaImagen').value = imagen;
-            }
-        </script>
-    </body>
+        <div class="crear-actividad">
+          <form method="POST" action="{{ url_for('registrarActividad.PostNvActividad') }}" class="nv-actividad-form">
 
-    </html>
+            <div class="nv-actividad-grid">
+              <!-- Columna: imagen + paleta de colores -->
+              <div class="nv-actividad-col nv-actividad-col-preview">
+                <img id="imagen-actividad"
+                     src="{{ datos.rutaImagen if datos.rutaImagen else url_for('static', filename='img/imagen1.png') }}"
+                     alt="Imagen de actividad"
+                     class="imagen-actividad">
+
+                <div class="color-palette">
+                  <div class="color-box pink"   onclick="cambiarImagen('imagen1.png')"></div>
+                  <div class="color-box orange" onclick="cambiarImagen('imagen3.png')"></div>
+                  <div class="color-box green"  onclick="cambiarImagen('imagen4.png')"></div>
+                  <div class="color-box yellow" onclick="cambiarImagen('imagen5.png')"></div>
+                  <div class="color-box blue"   onclick="cambiarImagen('imagen2.png')"></div>
+                  <div class="color-box purple" onclick="cambiarImagen('imagen6.png')"></div>
+                </div>
+                {% if errores.rutaImagen %}
+                <p class="error">{{ errores.rutaImagen }}</p>
+                {% endif %}
+              </div>
+
+              <!-- Columna: campos del formulario -->
+              <div class="nv-actividad-col nv-actividad-col-fields">
+                <input type="text"
+                       name="nombre"
+                       placeholder="Tarea"
+                       value="{{ datos.titulo }}"
+                       class="actividad-titulo">
+                {% if errores.titulo %}
+                <p class="error">{{ errores.titulo }}</p>
+                {% endif %}
+
+                <label for="fecha">Fecha</label>
+                <input type="date" id="fecha" name="fecha" value="{{ datos.fecha }}">
+                {% if errores.fecha %}
+                <p class="error">{{ errores.fecha }}</p>
+                {% endif %}
+
+                <label for="repetir">Repetir</label>
+                <select name="repetir" id="repetir">
+                  <option value="diario"    {% if datos.repeticion=='diario' %}selected{% endif %}>Diario</option>
+                  <option value="semanal"   {% if datos.repeticion=='semanal' %}selected{% endif %}>Semanal</option>
+                  <option value="mensual"   {% if datos.repeticion=='mensual' %}selected{% endif %}>Mensual</option>
+                  <option value="unica vez" {% if datos.repeticion=='unica vez' %}selected{% endif %}>Única vez</option>
+                </select>
+                {% if errores.repeticion %}
+                <p class="error">{{ errores.repeticion }}</p>
+                {% endif %}
+
+                <label for="hora">Hora</label>
+                <input type="time" id="hora" name="hora" value="{{ datos.hora }}">
+                {% if errores.hora %}
+                <p class="error">{{ errores.hora }}</p>
+                {% endif %}
+
+                <label for="prioridad">Prioridad</label>
+                <select id="prioridad" name="prioridad">
+                  <option value="">-- Selecciona una opción --</option>
+                  <option value="alta"  {% if datos.prioridad=='alta'  %}selected{% endif %}>Alta</option>
+                  <option value="media" {% if datos.prioridad=='media' %}selected{% endif %}>Media</option>
+                  <option value="baja"  {% if datos.prioridad=='baja'  %}selected{% endif %}>Baja</option>
+                </select>
+                {% if errores.prioridad %}
+                <p class="error">{{ errores.prioridad }}</p>
+                {% endif %}
+
+                <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" name="descripcion" value="{{ datos.descripcion }}"></textarea>
+                {% if errores.descripcion %}
+                <p class="error">{{ errores.descripcion }}</p>
+                {% endif %}
+
+                <input type="hidden" id="rutaImagen" name="rutaImagen" value="static/img/imagen1.png">
+
+                <button type="submit" class="crear-btn">Crear</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function cambiarImagen(nombreImagen) {
+      const ruta = 'static/img/' + nombreImagen;
+      document.getElementById('imagen-actividad').src = '/' + ruta;
+      document.getElementById('rutaImagen').value = ruta;
+    }
+  </script>
+{% endblock %}

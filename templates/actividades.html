@@ -1,197 +1,227 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends "plantilla.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Actividades - Priority Pulse</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/actividades.css') }}">
-    <!-- link para sweetalert -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.2/dist/sweetalert2.min.css">
-</head>
+{% block title %}Actividades - Priority Pulse{% endblock %}
 
-<body>
-    {% if errores and errores.actividades_error %}
-        <script>
-            Swal.fire({
-                title: 'Mensaje',
-                text: '{{ errores.actividades_error }}',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-        </script>
-    {% endif %}
-    <nav class="navbar">
-        <div class="box">
-            <div class="fogata-container">
-                <div id="fogata" class="fogata">
-                    <div class="llamas">
-                        <div class="llama llama-1"></div>
-                        <div class="llama llama-2"></div>
-                        <div class="llama llama-3"></div>
-                        <div class="llama llama-4"></div>
-                        <div class="centro"></div>
-                        <div class="chispas"></div>
-                    </div>
-                    <div class="resplandor"></div>
-                    <div class="carita-con-manita">
-                        <span class="carita">😊</span>
-                        <span class="manita">✋</span>
-                    </div>
-                </div>
-                <div class="racha-info">
-                    <span>Días:</span>
-                    <span id="dias-racha" class="dias-racha">{{ racha }}</span>
-                </div>
-            </div>
-        </div>
-        <a href="{{url_for('rutinas')}}">Rutinas</a>
-        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
-        <a href="{{ url_for('actividades') }}">Actividades</a>
-        <a href="{{ url_for('login') }}">Cerrar Sesión</a>
-    </nav>
+{% block content %}
+{% if errores and errores.actividades_error %}
+<script>
+    Swal.fire({
+        title: 'Mensaje',
+        text: '{{ errores.actividades_error }}',
+        icon: 'error',
+        confirmButtonText: 'Aceptar'
+    });
+</script>
+{% endif %}
 
-    {% if errores and errores.no_actividades %}
-        <div class="calendario-header">
+{% if errores and errores.no_actividades %}
+<div class="calendario-wrapper empty-state">
+    <div class="calendario-header">
+        <div class="header-text">
             <h2>No hay actividades para mostrar</h2>
-            <a href="{{ url_for('NvActividad') }}" class="crear-actividad-btn"><h2>Crear mi nueva actividad</h2></a>
+            <p class="subtitulo">
+                Aún no has creado actividades para hoy. Empieza tu racha organizando tu primera tarea.
+            </p>
         </div>
-    {% elif tareas_importantes|length > 0 %}
-        <div class="Tareas_Dia">
-            <section class="calendario">
-                <div class="calendario-header">
-                    <h2>Tareas por completar</h2>
-                    <a href="{{ url_for('NvActividad') }}" class="agregar-btn">Agregar</a>
-                </div>
-                <div class="tarjetas calendario-grid">
-                    {% for tarea in tareas_importantes %}
-                    <div class="tarjeta {% if tarea.completada %}completada{% endif %}">
-                        <img src="{{ tarea.imagen }}" class="icono-tarea">
-                        <h3>{{ tarea.titulo }}</h3>
-                        <span>{{ tarea.hora }}</span>
-                        <p class="descripcion">{{ tarea.descripcion }}</p>
-                        <!-- añadir onclick para cambiar el estado de la tarea en la base de datos -->
-                        <input type="checkbox" class="custom-checkbox" {% if tarea.completada %}checked{% endif %}> 
+        <a href="{{ url_for('registrarActividad.NvActividad') }}" class="crear-actividad-btn">
+            <span class="btn-label">Crear mi nueva actividad</span>
+        </a>
+    </div>
+</div>
 
-                        <div class="acciones">
-                            <a href="javascript:void(0)" class="btn-eliminar" onclick="confirmarEliminacion('{{ tarea.id }}')">Eliminar</a>
+{% elif tareas_importantes|length > 0 %}
 
-                            <a href="{{ url_for('editar_actividad', id=tarea.id) }}" class="btn-actualizar">Actualizar</a>
-                        </div>
-                    </div>
+<div class="Tareas_Dia">
+    <section class="calendario">
+        <div class="calendario-header">
+            <div class="header-text">
+                <h2>Tareas por completar</h2>
+                <p class="subtitulo">
+                    Revisa tus actividades importantes del día y márcalas como completadas para mantener tu racha.
+                </p>
+            </div>
+
+            <div class="acciones-header">
+                {% with mensajes = get_flashed_messages() %}
+                {% if mensajes %}
+                <div class="flash-container">
+                    {% for msj in mensajes %}
+                    <div class="flash-message">{{ msj }}</div>
                     {% endfor %}
                 </div>
-            </section>
+                {% endif %}
+                {% endwith %}
+
+                <a href="{{ url_for('registrarActividad.NvActividad') }}" class="agregar-btn">
+                    <span class="icono-btn">＋</span>
+                    <span class="btn-label">Agregar</span>
+                </a>
+            </div>
         </div>
-    {% else %}
-        <div class="calendario-header">
+
+        <!-- Controles de filtro (solo HTML/CSS) -->
+        <div class="calendario-filtros">
+            <!-- Radios ocultos -->
+            <input type="radio" name="filtro-tareas" id="filtro-todas" checked>
+            <input type="radio" name="filtro-tareas" id="filtro-completadas">
+            <input type="radio" name="filtro-tareas" id="filtro-pendientes">
+            <input type="radio" name="filtro-tareas" id="filtro-alta">
+            <input type="radio" name="filtro-tareas" id="filtro-media">
+            <input type="radio" name="filtro-tareas" id="filtro-baja">
+
+            <!-- Etiquetas tipo “chip” -->
+            <div class="filtros-chips">
+                <label for="filtro-todas" class="filtro-chip">Todas</label>
+                <label for="filtro-completadas" class="filtro-chip">Completadas</label>
+                <label for="filtro-pendientes" class="filtro-chip">Pendientes</label>
+                <span class="filtro-separador"></span>
+                <label for="filtro-alta" class="filtro-chip filtro-alta">Alta</label>
+                <label for="filtro-media" class="filtro-chip filtro-media">Media</label>
+                <label for="filtro-baja" class="filtro-chip filtro-baja">Baja</label>
+            </div>
+        </div>
+
+        <div class="tarjetas calendario-grid">
+            {% for tarea in tareas_importantes %}
+            <article class="tarjeta prioridad-{{ tarea.prioridad|lower }}{% if tarea.completada %} completada{% endif %}">
+                <div class="tarjeta-header">
+                    <div class="tarjeta-media">
+                        <img src="{{ tarea.imagen }}" class="icono-tarea" alt="Icono de la tarea {{ tarea.titulo }}">
+                    </div>
+
+                    <div class="tarjeta-main-info">
+                        <h3 class="tarjeta-titulo">{{ tarea.titulo }}</h3>
+
+                        <div class="tarjeta-meta">
+                            <span class="chip chip-hora">🕒 {{ tarea.hora }}</span>
+                            <span class="chip chip-prioridad prioridad-{{ tarea.prioridad|lower }}">
+                                {{ tarea.prioridad }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <label class="estado-tarea">
+                        <input type="checkbox"
+                               class="custom-checkbox"
+                               data-idx="{{ tarea.id }}"
+                               {% if tarea.completada %}checked{% endif %}>
+                        <span class="estado-label">Completada</span>
+                    </label>
+                </div>
+
+                <p class="descripcion">
+                    {{ tarea.descripcion }}
+                </p>
+
+                <div class="tarjeta-footer">
+                    <div class="acciones">
+                        <a href="javascript:void(0)"
+                           class="btn-eliminar"
+                           onclick="confirmarEliminacion('{{ tarea.id }}')">
+                            Eliminar
+                        </a>
+
+                        <a href="{{ url_for('editarActividad.editar_actividad', id=tarea.id) }}"
+                           class="btn-actualizar">
+                            Actualizar
+                        </a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+{% else %}
+<div class="calendario-wrapper empty-state">
+    <div class="calendario-header">
+        <div class="header-text">
             <h2>Hay un pequeño inconveniente para mostrar las tareas</h2>
+            <p class="subtitulo">
+                Vuelve a intentar en unos momentos o actualiza la página. Si el problema continúa,
+                contacta al administrador.
+            </p>
         </div>
-    {% endif %}
+    </div>
+</div>
+{% endif %}
 
-    <script>
-        let rachajs = 0; // Inicializar racha
-        let color_racha = 'default'; // Inicializar color de racha
+<script>
+    const checkboxes = document.querySelectorAll('.custom-checkbox');
 
-        // const checkboxes = document.querySelectorAll('.tarea-checkbox');
-        const checkboxes = document.querySelectorAll('.custom-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            const tareasCompletadas = Array.from(checkboxes)
+                .filter(cbx => cbx.checked)
+                .map(cbx => cbx.getAttribute('data-idx'));
 
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function () {
-                const tarea_completada = Array.from(checkboxes)
-                    .filter(cbx => cbx.checked)
-                    .map(cbx => cbx.getAttribute('data-idx'));
-
-                fetch('/actualizar_tarea', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ tarea_completada: tarea_completada })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        document.querySelector('#dias-racha').innerText = data.racha;
-                        actualizarFogata(data.racha);
-                    });
+            fetch('/actualizar_tarea', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tarea_completada: tareasCompletadas })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const diasRacha = data.racha || 0;
+                const rachaElemento = document.getElementById('dias-racha');
+                if (rachaElemento) {
+                    rachaElemento.innerText = diasRacha;
+                }
+                actualizarEmojiRacha(diasRacha);
             });
         });
+    });
 
-        function actualizarFogata(racha) {
-            const fogata = document.getElementById('fogata');
-            // Calcular fase (cada 10 días de racha es una fase)
-            const fase = Math.min(Math.floor(racha / 10), 19);
-            fogata.className = `fogata etapa-${fase}`;
-            
-            // Efecto especial cada 10 días (nueva fase)
-            if (racha % 10 === 0 && racha > 0) {
-                fogata.classList.add('saludar');
-                setTimeout(() => fogata.classList.remove('saludar'), 2000);
-                crearChispas(15 + fase);
-            }
+    function actualizarEmojiRacha(racha) {
+        const emoji = document.getElementById('emoji-racha');
+        if (!emoji) return;
+
+        if (racha >= 30) {
+            emoji.innerText = '🏆';
+        } else if (racha >= 20) {
+            emoji.innerText = '💪';
+        } else if (racha >= 10) {
+            emoji.innerText = '🔥';
+        } else if (racha >= 5) {
+            emoji.innerText = '😎';
+        } else if (racha >= 1) {
+            emoji.innerText = '😊';
+        } else {
+            emoji.innerText = '😴';
         }
+    }
 
-        function crearChispas(cantidad) {
-            const fogata = document.getElementById('fogata');
-            const chispasContainer = fogata.querySelector('.chispas');
-            if (!chispasContainer) return;
-            
-            const racha = parseInt(document.querySelector('#dias-racha').innerText);
-            const fase = Math.min(Math.floor(racha / 10), 19);
-            
-            for (let i = 0; i < cantidad; i++) {
-                const spark = document.createElement('div');
-                spark.className = 'spark';
-                
-                // Posición y animación aleatoria
-                const posX = (Math.random() - 0.5) * 100;
-                const duration = 0.8 + Math.random() * 1.2;
-                const delay = Math.random() * 0.5;
-                const color = fase >= 15 ? 
-                    (Math.random() > 0.5 ? '#4fc3f7' : '#81d4fa') : 
-                    (fase >= 10 ? 
-                        (Math.random() > 0.5 ? '#ff8a65' : '#ff5722') : 
-                        (Math.random() > 0.5 ? '#ffecb3' : '#ffcc80'));
-                
-                spark.style.cssText = `position: absolute; width: ${2 + Math.random() * 3}px; height: ${2 + Math.random() * 3}px; background: ${color}; border-radius: 50%; bottom: 40%; left: 50%; opacity: 0; box-shadow: 0 0 5px ${fase >= 15 ? '#00bcd4' : (fase >= 10 ? '#ff3d00' : '#ff9800')};`;
+    document.addEventListener('DOMContentLoaded', () => {
+        const rachaElemento = document.getElementById('dias-racha');
+        const diasRacha = rachaElemento ? parseInt(rachaElemento.innerText) || 0 : 0;
+        actualizarEmojiRacha(diasRacha);
+    });
+</script>
 
-                // Animación de la chispa
-                const keyframes = `@keyframes spark-fly-${i} { 0% { transform: translate(0, 0); opacity: 1; } 100% { transform: translate(${posX}px, -${200 + Math.random() * 100}px); opacity: 0; } }`;
-
-                const style = document.createElement('style');
-                style.textContent = keyframes;
-                document.head.appendChild(style);
-                
-                spark.style.animation = `spark-fly-${i} ${duration}s ease-in ${delay}s forwards`;
-                chispasContainer.appendChild(spark);
-            }
-        }
-
-        // Inicializar fogata con la racha actual
-        actualizarFogata(rachajs);
-    </script>
-
-    <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
-    <!-- link para sweetalert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.2/dist/sweetalert2.all.min.js"></script>
-
-    <script>
+<script>
     function confirmarEliminacion(id) {
-        id = parseInt(id);
+        const tareaId = parseInt(id);
+        if (isNaN(tareaId)) return;
+
         Swal.fire({
             title: 'Confirmar eliminación',
             text: '¿Estás seguro de que deseas eliminar la tarea?',
             icon: 'warning',
-            showCancelButton: true,  // Muestra el botón "Cancelar"
+            showCancelButton: true,
             confirmButtonText: 'Eliminar',
             cancelButtonText: 'Cancelar',
-            reverseButtons: true  // Cambia el orden de los botones (primero el "Cancelar")
+            reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "/eliminar_actividad/" + id;
+                window.location.href = `/eliminar_actividad/${tareaId}`;
             }
         });
     }
-    </script>
-</body>
+</script>
 
-</html>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{% endblock %}

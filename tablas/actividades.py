@@ -4,7 +4,7 @@ class Actividades(db.Model):
     __tablename__ = 'actividades'
     
     id = db.Column(db.Integer, primary_key=True)
-    titulo = db.Column(db.String(100), nullable=False)
+    titulo = db.Column(db.String(100), nullable=False, unique = True)
     fecha = db.Column(db.Date, nullable=True)
     repetir = db.Column(db.String(20), nullable=True)  # diario, semanal, mensual
     hora = db.Column(db.Time, nullable=True)
@@ -12,6 +12,6 @@ class Actividades(db.Model):
     descripcion = db.Column(db.Text, nullable=True)
     imagen = db.Column(db.String(200), nullable=True)  # ruta a la imagen
     completada = db.Column(db.Boolean, default=False, nullable=False)
-    estado = db.Column(db.Integer, default=1, nullable=False)
+    estado = db.Column(db.Boolean, default=True, nullable=False) #softdelete
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     usuario = db.relationship('Usuarios', backref='actividades')

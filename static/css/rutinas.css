@@ -1,153 +1,414 @@
-   * {
+/* ===========================
+   Variables y ajustes globales
+   =========================== */
+
+   :root {
+    --pp-primary: #9b5cff;
+    --pp-primary-soft: #c4a8ff;
+    --pp-primary-dark: #6f3bd6;
+  
+    --pp-accent: #ffb74d;
+    --pp-accent-soft: #ffe0b2;
+  
+    --pp-bg-dark: #070815;
+    --pp-bg-mid: #141624;
+    --pp-bg-light: #dfe3f0;
+  
+    --pp-glass-dark: rgba(34, 39, 63, 0.70);
+    --pp-glass-mid: rgba(47, 52, 82, 0.65);
+    --pp-glass-light: rgba(255, 255, 255, 0.06);
+  
+    --pp-border-glass: rgba(255, 255, 255, 0.18);
+    --pp-border-soft: rgba(148, 163, 253, 0.4);
+    --pp-border-muted: rgba(148, 163, 253, 0.2);
+  
+    --pp-text-main: #f9fafb;
+    --pp-text-soft: #e5e7eb;
+    --pp-text-muted: #9ca3af;
+  
+    --pp-danger: #f97373;
+    --pp-danger-dark: #ef4444;
+    --pp-success: #4ade80;
+    --pp-success-dark: #22c55e;
+  
+    --pp-radius-lg: 26px;
+    --pp-radius-md: 18px;
+    --pp-radius-full: 999px;
+  
+    --pp-shadow-soft: 0 18px 45px rgba(3, 7, 18, 0.65);
+    --pp-shadow-chip: 0 8px 20px rgba(15, 23, 42, 0.55);
+  
+    --pp-transition-fast: 0.18s ease;
+    --pp-transition-med: 0.28s ease;
+  }
+  
+  * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
   
   body {
     min-height: 100vh;
-    background: #f2f2f2;
+    color: var(--pp-text-main);
+    /* Imagen de fondo global */
+    background: url("../img/fondo1.jpg") center center / cover no-repeat fixed;
   }
+  
+  /* Quitar subrayado global de links */
+  a {
+    text-decoration: none;
+  }
+  
+  /* ===========================
+     Navbar glass gris, delgada
+     =========================== */
   
   .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    background: #b39ddb;
-    padding: 10px 30px;
-    font-weight: bold;
-  }
+    justify-content: space-between;
+    column-gap: 40px;
   
-  .navbar a {
-    color: #4545EA;
-    text-decoration: none;
-    margin: 0 10px;
-    font-size: 25px;
-    font-weight: bolder;
-  }
+    background: rgba(148, 163, 184, 0.22);       /* gris translúcido */
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
   
-  .navbar a:hover {
-    transform: scale(1.1) translateY(-3px);
-    color: white;
+    padding: 6px 40px;
+    color: #e5e7eb;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.55);
   }
   
   .navbar .logo-nav {
-    height: 50px;
+    height: 32px;
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.55));
+    flex-shrink: 0;
   }
   
-  .open-modal-btn {
-    background: transparent;
-    border: none;
-    padding: 0;
-    margin: 0;
-    box-shadow: none;
-    outline: none;
-    cursor: default;
+  .navbar a {
+    color: #e5e7eb;
+    font-size: 14px;
+    font-weight: 600;
+    position: relative;
+    transition:
+      transform var(--pp-transition-fast),
+      color var(--pp-transition-fast),
+      opacity var(--pp-transition-fast);
+    opacity: 0.9;
+    margin-left: 26px;          /* separación entre enlaces */
   }
   
-  .open-modal-btn:focus,
-  .open-modal-btn:hover {
-    border: none;
-    box-shadow: none;
-    outline: none;
+  .navbar a:first-of-type {
+    margin-left: 0;
   }
   
-
-  .contenedor {
-    max-width: 1200px;
-    margin: 40px auto;
+  .navbar a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 0;
+    height: 2px;
+    border-radius: var(--pp-radius-full);
+    background: linear-gradient(90deg, #38bdf8, #a855f7);
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+    transition: width 0.2s ease;
+  }
+  
+  .navbar a:hover {
+    transform: translateY(-1px);
+    color: #ffffff;
+    opacity: 1;
+  }
+  
+  .navbar a:hover::after {
+    width: 100%;
+  }
+  
+  .box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  /* ===========================
+     Racha simplificada en navbar (si se usa)
+     =========================== */
+  
+  .racha-simplificada {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  
+    padding: 8px 20px;
+    margin: 10px 0;
+  
+    background: rgba(30, 41, 59, 0.38);          /* gris más oscuro que la navbar */
+    border-radius: var(--pp-radius-full);
+    border: 1px solid rgba(148, 163, 253, 0.7);
+  
+    color: #f9fafb;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(18px) saturate(170%);
+    -webkit-backdrop-filter: blur(18px) saturate(170%);
+  
+    flex-shrink: 0;
+  }
+  
+  .racha-simplificada span#emoji-racha {
+    font-size: 22px;
+    filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.5));
+  }
+  
+  /* ===========================
+     Layout general de Rutinas
+     =========================== */
+  
+  .rutinas-wrapper {
+    max-width: 1220px;
+    margin: 30px auto 40px;
     padding: 0 20px;
   }
   
-  .contenedor h1 {
-    text-align: center;
-    font-size: 36px;
-    margin-bottom: 30px;
-    color: #2a2a91;
+  .rutinas-panel {
+    background: var(--pp-glass-dark);
+    padding: 26px 26px 32px;
+    border-radius: 32px;
+    border: 1px solid var(--pp-border-glass);
+    box-shadow: var(--pp-shadow-soft);
+    backdrop-filter: blur(26px) saturate(180%);
+    -webkit-backdrop-filter: blur(26px) saturate(180%);
+    position: relative;
+    overflow: hidden;
   }
   
-  .tarjetas {
+  /* Brillos internos suaves */
+  .rutinas-panel::before {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(148, 163, 253, 0.22) 0, transparent 55%),
+      radial-gradient(circle at 100% 30%, rgba(96, 165, 250, 0.22) 0, transparent 60%),
+      radial-gradient(circle at 0% 100%, rgba(45, 212, 191, 0.18) 0, transparent 55%);
+    opacity: 0.32;
+    pointer-events: none;
+  }
+  
+  .rutinas-panel > * {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* ===========================
+     Header de Rutinas
+     =========================== */
+  
+  .rutinas-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  
+  .rutinas-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .rutinas-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--pp-text-main);
+    letter-spacing: 0.03em;
+  }
+  
+  .rutinas-subtitle {
+    font-size: 14px;
+    color: var(--pp-text-muted);
+    max-width: 620px;
+    line-height: 1.5;
+  }
+  
+  /* ===========================
+     Grid de tarjetas de Rutina
+     =========================== */
+  
+  .rutinas-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 20px;
   }
   
-  .tarjeta {
-    background: #fff;
-    border: 1px solid #000;       
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    overflow: hidden;
+  /* ===========================
+     Tarjeta de Rutina (glass)
+     =========================== */
+  
+  .rutina-card {
+    position: relative;
+    background: linear-gradient(145deg,
+        rgba(31, 41, 55, 0.9),
+        rgba(15, 23, 42, 0.96));
+    border-radius: var(--pp-radius-lg);
+    padding: 18px 18px 16px;
+    border: 1px solid var(--pp-border-glass);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    justify-content: space-between;
+    min-height: 170px;
+    transition:
+      transform var(--pp-transition-med),
+      box-shadow var(--pp-transition-med),
+      border-color var(--pp-transition-med),
+      background var(--pp-transition-med);
+    overflow: hidden;
   }
   
-  .tarjeta img {
+  .rutina-card::before {
+    content: "";
+    position: absolute;
+    inset: -15%;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(148, 163, 253, 0.35), transparent 55%),
+      radial-gradient(circle at 100% 0%, rgba(168, 85, 247, 0.35), transparent 55%);
+    opacity: 0;
+    transition: opacity var(--pp-transition-med);
+    pointer-events: none;
+  }
+  
+  .rutina-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.98);
+    border-color: rgba(209, 213, 252, 0.9);
+  }
+  
+  .rutina-card:hover::before {
+    opacity: 0.35;
+  }
+  
+  .rutina-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  
+  .rutina-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f9fafb;
+    letter-spacing: 0.02em;
+  }
+  
+  .rutina-card-desc {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--pp-text-soft);
+    line-height: 1.5;
+  }
+  
+  /* ===========================
+     Form / botón dentro de la tarjeta
+     =========================== */
+  
+  .rutina-card-form {
     width: 100%;
-    object-fit: cover;
-    height: 180px;
+    margin-top: auto;
   }
   
-  .tarjeta h2 {
-    margin: 15px 0 5px;
-    font-size: 24px;
-    color: #333;
+  .rutina-card-btn {
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  
+    padding: 10px 20px;
+    border-radius: var(--pp-radius-full);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: radial-gradient(
+      circle at top left,
+      rgba(196, 168, 255, 0.4),
+      rgba(168, 85, 247, 0.4)
+    );
+    color: #f9fafb;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    box-shadow: 0 14px 32px rgba(76, 29, 149, 0.85);
+    transition:
+      transform var(--pp-transition-med),
+      box-shadow var(--pp-transition-med),
+      filter var(--pp-transition-med),
+      border-color var(--pp-transition-med);
+    white-space: nowrap;
   }
   
-  .tarjeta p {
-    font-size: 16px;
-    color: #555;
-    padding: 0 20px;
+  .rutina-card-btn:hover {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 20px 45px rgba(76, 29, 149, 0.95);
+    filter: brightness(1.05);
+    border-color: rgba(255, 255, 255, 0.55);
   }
   
-  .tarjeta ul {
-    list-style: disc inside;
-    margin: 15px 0;
-    padding: 0 20px;
-    text-align: left;
+  .rutina-card-btn:active {
+    transform: translateY(1px) scale(0.99);
+    box-shadow: 0 10px 22px rgba(76, 29, 149, 0.8);
   }
   
-  .tarjeta li {
-    margin-bottom: 8px;
-    color: #444;
-  }
+  /* ===========================
+     Responsivo
+     =========================== */
   
-  .btn {
-    margin: 15px 0 20px;
-    display: inline-block;
-    background-color: #7c3aed;
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
-    padding: 12px 25px;
-    border-radius: 50px;
-    transition: background-color 0.3s, transform 0.2s;
-  }
+  @media (max-width: 768px) {
+    .navbar {
+      padding: 6px 16px;
+      column-gap: 20px;
+    }
   
-  .btn:hover {
-    background-color: #6b21a8;
-    transform: translateY(-2px);
-  }
+    .navbar a {
+      margin-left: 18px;
+    }
   
-
-  @keyframes fuego {
-    0%   { color: #ff5722; text-shadow: 0 0 20px #ff5722; }
-    50%  { color: #ff9800; text-shadow: 0 0 20px #ff9800; }
-    100% { color: #ff5722; text-shadow: 0 0 20px #ff5722; }
-  }
-  .racha {
-    font-weight: bold;
-    font-size: 24px;
-    animation: fuego 1.5s infinite alternate;
-  }
-  .racha.gold {
-    color: gold;
-    animation: none;
-    text-shadow: 0 0 15px gold;
-  }
-  .racha .manita, .racha .carita {
-    display: none; 
+    .rutinas-wrapper {
+      margin: 24px auto 32px;
+      padding: 0 14px;
+    }
+  
+    .rutinas-panel {
+      padding: 20px 16px 22px;
+    }
+  
+    .rutinas-title {
+      font-size: 24px;
+    }
+  
+    .rutinas-subtitle {
+      font-size: 13px;
+    }
+  
+    .rutinas-grid {
+      gap: 16px;
+    }
+  
+    .rutina-card {
+      padding: 16px 14px 14px;
+    }
   }
