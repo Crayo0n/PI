@@ -1,81 +1,147 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Perfil - Priority Pulse</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/perfil.css') }}">
-    <!-- link para sweetalert -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.2/dist/sweetalert2.min.css">
-</head>
-<body>
-    <!-- Barra superior -->
-    <nav class="navbar">
-        <div class="box">
-            <button class="open-modal-btn">
-                <span id="racha-fuego" class="racha" style="color: {{ color_racha }}">
-                    {{ racha }} 🔥
-                    <span class="manita">✋</span>
-                    <span class="carita">😊</span>
+{% extends "plantilla.html" %}
+
+{% block title %}Perfil - Priority Pulse{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/perfil.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.2/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.2/dist/sweetalert2.all.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<main class="contenedor-perfil">
+    <!-- COLUMNA IZQUIERDA: PERFIL -->
+    <section class="editar-perfil">
+        <!-- Header de perfil -->
+        <div class="perfil-header-block">
+            <div class="perfil-avatar">
+                <span class="perfil-avatar-inicial">
+                    {{ (usuario.nombre|default('U'))[0]|upper }}
                 </span>
+            </div>
+            <div class="perfil-header-text">
+                <h2>{{ (usuario.nombre ~ ' ' ~ usuario.apellido)|trim }}</h2>
+                <p class="perfil-subtitle">
+                    Ajusta tu información y mantén tu cuenta al día para seguir construyendo tus rachas.
+                </p>
+            </div>
+        </div>
+
+        <!-- Chips rápidos -->
+        <div class="perfil-chip-row">
+            <div class="perfil-chip">
+                <span>📧</span>
+                <span>{{ usuario.email }}</span>
+            </div>
+            <div class="perfil-chip perfil-chip-soft">
+                <span>🔥</span>
+                <span>Racha actual: {{ usuario.racha|default(0, true) }} días</span>
+            </div>
+        </div>
+
+        <!-- Tabs de contenido -->
+        <div class="perfil-tabs">
+            <button class="perfil-tab-btn perfil-tab-btn-active" data-tab="perfil-info">
+                Perfil
+            </button>
+            <button class="perfil-tab-btn" data-tab="perfil-seguridad">
+                Seguridad
+            </button>
+            <button class="perfil-tab-btn" data-tab="perfil-cuenta">
+                Cuenta
             </button>
         </div>
-        <a href="rutinas">Rutinas</a>
-        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-nav">
-        <a href="actividades">Actividades</a>
-        <a href="{{ url_for('login') }}">Cerrar Sesión</a>
-    </nav>
 
-    <main class="contenedor-perfil">
-        <!-- Formulario -->
-        <section class="editar-perfil">
-            <h2>Editar</h2>
-            <form action="{{ url_for('actualizar_perfil') }}" method="POST">
-                <input type="text" placeholder="Nombre" value="{{ usuario.nombre }}" name="nombre">
-                <input type="text" placeholder="Apellido" value="{{ usuario.apellido }}" name="apellido">
-                <input type="password" placeholder="Contraseña" value="{{ usuario.contrasena }}" name="contrasena">
-                <input type="password" placeholder="Confirmar contraseña" value="{{ usuario.contrasena }}" name="confirmar_contrasena">
-                <input type="email" placeholder="Email" value="{{ usuario.email }}" name="email">
-                <button type="submit">Guardar</button>
-            </form>
-            <button type="button" class="eliminar-cuenta" onclick="confirmarEliminarCuenta()">Eliminar cuenta</button>
-        </section>
+        <div class="perfil-tab-content">
+            <!-- TAB 1: INFO BÁSICA -->
+            <div class="perfil-tab-panel perfil-tab-panel-active" id="perfil-info">
+                <form class="perfil-form" action="{{ url_for('actulizarUsuario.actualizar_perfil') }}" method="POST">
+                    <div class="perfil-field-group">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" id="nombre" name="nombre"
+                               value="{{ usuario.nombre }}"
+                               placeholder="Tu nombre">
+                    </div>
 
-        <!-- Estadísticas -->
-        <section class="estadisticas">
-            <h2>Estadística de actividades</h2>
-            <h3>{{ mes }}, {{ anio }}</h3>
-            <table class="calendario">
-                <thead>
-                    <tr>
-                        <th>D</th><th>L</th><th>M</th><th>M</th><th>J</th><th>V</th><th>S</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for semana in semanas %}
-                    <tr>
-                        {% for dia in semana %}
-                            <td>
-                                {% if dia != 0 %}
-                                    {% if dias_cumplidos and dia in dias_cumplidos %}
-                                        <span class="{{ dias_cumplidos[dia] }}"></span>
-                                    {% else %}
-                                        {{ dia }}
-                                    {% endif %}
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    <div class="perfil-field-group">
+                        <label for="apellido">Apellido</label>
+                        <input type="text" id="apellido" name="apellido"
+                               value="{{ usuario.apellido }}"
+                               placeholder="Tu apellido">
+                    </div>
 
-            <div class="leyenda">
-                <div><span class="una"></span> Al menos una actividad completa</div>
-                <div><span class="completo"></span> Todas las actividades completas</div>
+                    <div class="perfil-field-group">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" id="email" name="email"
+                               value="{{ usuario.email }}"
+                               placeholder="ejemplo@correo.com">
+                    </div>
+
+                    <button type="submit">Guardar cambios</button>
+                </form>
             </div>
-        </section>
+
+            <!-- TAB 2: SEGURIDAD -->
+            <div class="perfil-tab-panel" id="perfil-seguridad">
+                <form class="perfil-form" action="{{ url_for('actulizarUsuario.actualizar_perfil') }}" method="POST">
+                    <!-- Estos campos pueden usarse solo para cambiar contraseña -->
+                    <div class="perfil-field-group perfil-password-row">
+                        <label for="contrasena">Contraseña</label>
+                        <div class="perfil-password-wrapper">
+                            <input type="password" id="contrasena" name="contrasena"
+                                   value="{{ usuario.contrasena }}"
+                                   placeholder="Nueva contraseña (opcional)">
+                            <button type="button" class="btn-toggle-pass" data-target="contrasena">👁</button>
+                        </div>
+                    </div>
+
+                    <div class="perfil-field-group perfil-password-row">
+                        <label for="confirmar_contrasena">Confirmar contraseña</label>
+                        <div class="perfil-password-wrapper">
+                            <input type="password" id="confirmar_contrasena" name="confirmar_contrasena"
+                                   value="{{ usuario.contrasena }}"
+                                   placeholder="Confirma tu contraseña">
+                            <button type="button" class="btn-toggle-pass" data-target="confirmar_contrasena">👁</button>
+                        </div>
+                    </div>
+
+                    <!-- Mandamos también nombre/apellido/email actuales ocultos para no perderlos -->
+                    <input type="hidden" name="nombre" value="{{ usuario.nombre }}">
+                    <input type="hidden" name="apellido" value="{{ usuario.apellido }}">
+                    <input type="hidden" name="email" value="{{ usuario.email }}">
+
+                    <button type="submit">Actualizar contraseña</button>
+                </form>
+            </div>
+
+            <!-- TAB 3: CUENTA -->
+            <div class="perfil-tab-panel" id="perfil-cuenta">
+                <table class="perfil-info-table">
+                    <tr>
+                        <th>Nombre completo</th>
+                        <td>{{ (usuario.nombre ~ ' ' ~ usuario.apellido)|trim }}</td>
+                    </tr>
+                    <tr>
+                        <th>Correo</th>
+                        <td>{{ usuario.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Racha actual</th>
+                        <td>{{ usuario.racha|default(0, true) }} días</td>
+                    </tr>
+                </table>
+
+                <p class="perfil-info-note">
+                    Tu cuenta guarda tus actividades, rachas y rutinas para ayudarte a construir hábitos
+                    de forma constante.
+                </p>
+
+                <button type="button" class="eliminar-cuenta" onclick="confirmarEliminarCuenta()">
+                    Eliminar cuenta
+                </button>
+            </div>
+        </div>
 
         {% with mensajes = get_flashed_messages() %}
             {% if mensajes %}
@@ -84,27 +150,176 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-    </main>
+    </section>
 
-    <!-- link para sweetalert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.2/dist/sweetalert2.all.min.js"></script>
+    <!-- COLUMNA DERECHA: ESTADÍSTICAS -->
+    <section class="estadisticas">
+        <div class="estadisticas-header">
+            <div class="estadisticas-title-block">
+                <h2>Estadística de actividades</h2>
+                <p class="estadisticas-subtitle">
+                    Visualiza tus días cumplidos en el mes actual y un resumen rápido de tu desempeño.
+                </p>
+            </div>
+            <div class="estadisticas-mes-info">
+                <span class="mes-actual-label">
+                    {{ mes }}, {{ año }}
+                </span>
+            </div>
+        </div>
 
-    <script>
-        function confirmarEliminarCuenta() {
-            Swal.fire({
-                title: 'Eliminación de cuenta',
-                text: '¿Estás seguro de que deseas eliminar tu cuenta? ALERTA: Esta acción no se puede deshacer.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Eliminar',
-                cancelButtonText: 'Cancelar',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "/eliminar_cuenta";
+        <!-- Tabs de estadísticas (si quieres más vistas en el futuro) -->
+        <div class="estadisticas-tabs">
+            <button class="estadistica-tab-btn estadistica-tab-btn-active" data-stab="stats-calendario">
+                Calendario
+            </button>
+            <button class="estadistica-tab-btn" data-stab="stats-resumen">
+                Resumen
+            </button>
+        </div>
+
+        <div class="estadisticas-tab-content">
+            <!-- TAB CALENDARIO -->
+            <div class="estadistica-tab-panel estadistica-tab-panel-active" id="stats-calendario">
+                <table class="calendario">
+                    <thead>
+                        <tr>
+                            <th>D</th><th>L</th><th>M</th><th>M</th><th>J</th><th>V</th><th>S</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for semana in semanas %}
+                        <tr>
+                            {% for dia in semana %}
+                                <td>
+                                    {% if dia != 0 %}
+                                        {% if dias_cumplidos and dia in dias_cumplidos %}
+                                            <span class="{{ dias_cumplidos[dia] }}"></span>
+                                        {% else %}
+                                            {{ dia }}
+                                        {% endif %}
+                                    {% else %}
+                                        &nbsp;
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="leyenda">
+                    <div><span class="una"></span> Al menos una actividad completa</div>
+                    <div><span class="completo"></span> Todas las actividades completas</div>
+                </div>
+            </div>
+
+            <!-- TAB RESUMEN -->
+            <div class="estadistica-tab-panel" id="stats-resumen">
+                <table class="resumen-table">
+                    <tr>
+                        <th>Días con actividades completas</th>
+                        <td>{{ completed_days or 0 }}</td>
+                    </tr>
+                    <tr>
+                        <th>Días con todas las actividades completas</th>
+                        <td>{{ perfect_days or 0 }}</td>
+                    </tr>
+                    <tr>
+                        <th>Total de actividades del mes</th>
+                        <td>{{ total_activities_month or 0 }}</td>
+                    </tr>
+                    <tr>
+                        <th>Porcentaje de cumplimiento</th>
+                        <td>{{ completion_rate or 0 }}%</td>
+                    </tr>
+                </table>
+
+                <p class="estadisticas-footer">
+                    Estos datos son una referencia visual para ayudarte a mantener tus hábitos. 
+                    Pronto podrás ver más métricas de tus actividades.
+                </p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    // Tabs de perfil
+    document.addEventListener('DOMContentLoaded', () => {
+        // Tabs de perfil
+        const perfilTabButtons = document.querySelectorAll('.perfil-tab-btn');
+        const perfilPanels = document.querySelectorAll('.perfil-tab-panel');
+
+        perfilTabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = btn.getAttribute('data-tab');
+
+                perfilTabButtons.forEach(b => b.classList.remove('perfil-tab-btn-active'));
+                perfilPanels.forEach(p => p.classList.remove('perfil-tab-panel-active'));
+
+                btn.classList.add('perfil-tab-btn-active');
+                const panel = document.getElementById(target);
+                if (panel) {
+                    panel.classList.add('perfil-tab-panel-active');
                 }
             });
-        }
-    </script>
-</body>
-</html>
+        });
+
+        // Tabs de estadísticas
+        const statsButtons = document.querySelectorAll('.estadistica-tab-btn');
+        const statsPanels = document.querySelectorAll('.estadistica-tab-panel');
+
+        statsButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = btn.getAttribute('data-stab');
+
+                statsButtons.forEach(b => b.classList.remove('estadistica-tab-btn-active'));
+                statsPanels.forEach(p => p.classList.remove('estadistica-tab-panel-active'));
+
+                btn.classList.add('estadistica-tab-btn-active');
+                const panel = document.getElementById(target);
+                if (panel) {
+                    panel.classList.add('estadistica-tab-panel-active');
+                }
+            });
+        });
+
+        // Mostrar / ocultar contraseña
+        const toggleButtons = document.querySelectorAll('.btn-toggle-pass');
+        toggleButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                if (!input) return;
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    btn.textContent = '🙈';
+                } else {
+                    input.type = 'password';
+                    btn.textContent = '👁';
+                }
+            });
+        });
+    });
+
+    // Confirmar eliminación de cuenta
+    function confirmarEliminarCuenta() {
+        Swal.fire({
+            title: 'Eliminación de cuenta',
+            text: '¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Eliminar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/eliminar_cuenta";
+            }
+        });
+    }
+</script>
+
+{% endblock %}
